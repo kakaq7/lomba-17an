@@ -1,6 +1,7 @@
 import streamlit as st
 import json
 import os
+from fpdf import FPDF
 
 DATA_FILE = "data_lomba.json"
 
@@ -14,17 +15,45 @@ def save_data(data):
     with open(DATA_FILE, "w") as f:
         json.dump(data, f, indent=2)
 
+def generate_pdf(data):
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", "B", 16)
+    pdf.cell(0, 10, "Daftar Juara Lomba 17 Agustusan", ln=True, align="C")
+    pdf.ln(5)
+
+    juara_ditemukan = False
+    for nama_lomba, info in data.items():
+        if info.get("pemenang"):
+            juara_ditemukan = True
+            pdf.set_font("Arial", "B", 12)
+            pdf.cell(0, 10, f"Lomba: {nama_lomba}", ln=True)
+            pdf.set_font("Arial", "", 11)
+            for i, peserta in enumerate(info["pemenang"], 1):
+                pdf.cell(0, 8, f"Juara {i}: {peserta}", ln=True)
+            pdf.ln(4)
+
+    if not juara_ditemukan:
+        pdf.set_font("Arial", "", 12)
+        pdf.cell(0, 10, "Belum ada lomba yang memiliki juara.", ln=True)
+
+    pdf_output_path = "daftar_juara_lomba.pdf"
+    pdf.output(pdf_output_path)
+    return pdf_output_path
+
+# ------------------- Aplikasi -------------------
+
 data = load_data()
-st.title("🏁 Manajemen Lomba bggg 17 Agustusan")
+st.title("🏁 Manajemen Lomba hgdg 17 Agustusan")
 st.subheader("Karang Taruna Bina Bhakti")
 
 menu = st.sidebar.radio("Menu", [
-    "Tambah Lomba", "Tambah Peserta", 
-    "Kualifikasi", "Final & Juara", 
+    "Tambah Lomba", "Tambah Peserta",
+    "Kualifikasi", "Final & Juara",
     "Lihat Semua", "Hapus Lomba", "Hapus Peserta"
 ])
 
-# -------------------- TAMBAH LOMBA --------------------
+# ------------------- Tambah Lomba -------------------
 if menu == "Tambah Lomba":
     nama_lomba = st.text_input("Nama Lomba Baru")
     if st.button("Tambah Lomba"):
@@ -35,7 +64,7 @@ if menu == "Tambah Lomba":
             save_data(data)
             st.success(f"Lomba '{nama_lomba}' ditambahkan.")
 
-# -------------------- TAMBAH PESERTA --------------------
+# ------------------- Tambah Peserta -------------------
 elif menu == "Tambah Peserta":
     if not data:
         st.warning("Belum ada lomba.")
@@ -47,7 +76,7 @@ elif menu == "Tambah Peserta":
             save_data(data)
             st.success(f"Peserta '{peserta}' ditambahkan ke lomba '{nama_lomba}'.")
 
-# -------------------- KUALIFIKASI --------------------
+# ------------------- Kualifikasi -------------------
 elif menu == "Kualifikasi":
     if not data:
         st.warning("Belum ada lomba.")
@@ -57,14 +86,13 @@ elif menu == "Kualifikasi":
         if not peserta:
             st.warning("Belum ada peserta.")
         else:
-            st.markdown("### Peserta Kualifikasi")
             dipilih = st.multiselect("Pilih yang Lolos Kualifikasi", peserta)
             if st.button("Simpan Kualifikasi"):
                 data[nama_lomba]["lolos_kualifikasi"] = dipilih
                 save_data(data)
                 st.success("Peserta yang lolos kualifikasi berhasil disimpan.")
 
-# -------------------- FINAL & JUARA --------------------
+# ------------------- Final & Juara -------------------
 elif menu == "Final & Juara":
     if not data:
         st.warning("Belum ada lomba.")
@@ -74,7 +102,6 @@ elif menu == "Final & Juara":
         if not finalis:
             st.warning("Belum ada yang lolos kualifikasi.")
         else:
-            st.markdown("### Finalis")
             juara1 = st.selectbox("Juara 1", [""] + finalis)
             juara2 = st.selectbox("Juara 2", [""] + finalis)
             juara3 = st.selectbox("Juara 3", [""] + finalis)
@@ -88,23 +115,30 @@ elif menu == "Final & Juara":
                 save_data(data)
                 st.success("Pemenang final telah disimpan.")
 
-# -------------------- LIHAT SEMUA (Hanya Juara) --------------------
+# ------------------- Lihat Semua + PDF -------------------
 elif menu == "Lihat Semua":
-    if not data:
-        st.info("Belum ada data lomba.")
-    else:
-        st.markdown("## 🏆 Daftar Juara Lomba")
-        juara_ditemukan = False
-        for nama, info in data.items():
-            if info["pemenang"]:
-                juara_ditemukan = True
-                st.markdown(f"### 🏁 {nama}")
-                for i, p in enumerate(info["pemenang"], 1):
-                    st.write(f"Juara {i}: {p}")
-        if not juara_ditemukan:
-            st.info("Belum ada lomba yang memiliki juara.")
+    st.markdown("## 🏆 Daftar Juara Lomba")
+    juara_ditemukan = False
+    for nama, info in data.items():
+        if info["pemenang"]:
+            juara_ditemukan = True
+            st.markdown(f"### 🏁 {nama}")
+            for i, p in enumerate(info["pemenang"], 1):
+                st.write(f"Juara {i}: {p}")
+    if not juara_ditemukan:
+        st.info("Belum ada lomba yang memiliki juara.")
 
-# -------------------- HAPUS LOMBA --------------------
+    if st.button("📥 Download PDF"):
+        pdf_file_path = generate_pdf(data)
+        with open(pdf_file_path, "rb") as f:
+            st.download_button(
+                label="Unduh Daftar Juara PDF",
+                data=f,
+                file_name="daftar_juara_lomba.pdf",
+                mime="application/pdf"
+            )
+
+# ------------------- Hapus Lomba -------------------
 elif menu == "Hapus Lomba":
     if not data:
         st.warning("Belum ada lomba.")
@@ -115,7 +149,7 @@ elif menu == "Hapus Lomba":
             save_data(data)
             st.success(f"Lomba '{nama_lomba}' telah dihapus.")
 
-# -------------------- HAPUS PESERTA --------------------
+# ------------------- Hapus Peserta -------------------
 elif menu == "Hapus Peserta":
     if not data:
         st.warning("Belum ada lomba.")
@@ -128,7 +162,6 @@ elif menu == "Hapus Peserta":
             peserta_hapus = st.selectbox("Pilih Peserta yang Ingin Dihapus", peserta_list)
             if st.button("Hapus Peserta Ini"):
                 data[nama_lomba]["peserta"].remove(peserta_hapus)
-                # Hapus juga dari kualifikasi/pemenang jika ada
                 if peserta_hapus in data[nama_lomba]["lolos_kualifikasi"]:
                     data[nama_lomba]["lolos_kualifikasi"].remove(peserta_hapus)
                 if peserta_hapus in data[nama_lomba]["pemenang"]:
