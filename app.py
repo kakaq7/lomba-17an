@@ -18,8 +18,13 @@ data = load_data()
 st.title("🏁 Manajemen Lomba 17 Agustusan")
 st.subheader("Karang Taruna Bina Bhakti")
 
-menu = st.sidebar.radio("Menu", ["Tambah Lomba", "Tambah Peserta", "Kualifikasi", "Final & Juara", "Lihat Semua"])
+menu = st.sidebar.radio("Menu", [
+    "Tambah Lomba", "Tambah Peserta", 
+    "Kualifikasi", "Final & Juara", 
+    "Lihat Semua", "Hapus Lomba", "Hapus Peserta"
+])
 
+# -------------------- TAMBAH LOMBA --------------------
 if menu == "Tambah Lomba":
     nama_lomba = st.text_input("Nama Lomba Baru")
     if st.button("Tambah Lomba"):
@@ -30,6 +35,7 @@ if menu == "Tambah Lomba":
             save_data(data)
             st.success(f"Lomba '{nama_lomba}' ditambahkan.")
 
+# -------------------- TAMBAH PESERTA --------------------
 elif menu == "Tambah Peserta":
     if not data:
         st.warning("Belum ada lomba.")
@@ -41,6 +47,7 @@ elif menu == "Tambah Peserta":
             save_data(data)
             st.success(f"Peserta '{peserta}' ditambahkan ke lomba '{nama_lomba}'.")
 
+# -------------------- KUALIFIKASI --------------------
 elif menu == "Kualifikasi":
     if not data:
         st.warning("Belum ada lomba.")
@@ -57,6 +64,7 @@ elif menu == "Kualifikasi":
                 save_data(data)
                 st.success("Peserta yang lolos kualifikasi berhasil disimpan.")
 
+# -------------------- FINAL & JUARA --------------------
 elif menu == "Final & Juara":
     if not data:
         st.warning("Belum ada lomba.")
@@ -80,6 +88,7 @@ elif menu == "Final & Juara":
                 save_data(data)
                 st.success("Pemenang final telah disimpan.")
 
+# -------------------- LIHAT SEMUA --------------------
 elif menu == "Lihat Semua":
     if not data:
         st.info("Belum ada data lomba.")
@@ -97,3 +106,35 @@ elif menu == "Lihat Semua":
                 st.markdown("**🏆 Pemenang:**")
                 for i, p in enumerate(info["pemenang"], 1):
                     st.write(f"Juara {i}: {p}")
+
+# -------------------- HAPUS LOMBA --------------------
+elif menu == "Hapus Lomba":
+    if not data:
+        st.warning("Belum ada lomba.")
+    else:
+        nama_lomba = st.selectbox("Pilih Lomba yang Ingin Dihapus", list(data.keys()))
+        if st.button("Hapus Lomba Ini"):
+            del data[nama_lomba]
+            save_data(data)
+            st.success(f"Lomba '{nama_lomba}' telah dihapus.")
+
+# -------------------- HAPUS PESERTA --------------------
+elif menu == "Hapus Peserta":
+    if not data:
+        st.warning("Belum ada lomba.")
+    else:
+        nama_lomba = st.selectbox("Pilih Lomba", list(data.keys()))
+        peserta_list = data[nama_lomba]["peserta"]
+        if not peserta_list:
+            st.warning("Belum ada peserta di lomba ini.")
+        else:
+            peserta_hapus = st.selectbox("Pilih Peserta yang Ingin Dihapus", peserta_list)
+            if st.button("Hapus Peserta Ini"):
+                data[nama_lomba]["peserta"].remove(peserta_hapus)
+                # Pastikan juga dihapus dari kualifikasi/pemenang jika ada
+                if peserta_hapus in data[nama_lomba]["lolos_kualifikasi"]:
+                    data[nama_lomba]["lolos_kualifikasi"].remove(peserta_hapus)
+                if peserta_hapus in data[nama_lomba]["pemenang"]:
+                    data[nama_lomba]["pemenang"].remove(peserta_hapus)
+                save_data(data)
+                st.success(f"Peserta '{peserta_hapus}' dihapus dari lomba '{nama_lomba}'.")
