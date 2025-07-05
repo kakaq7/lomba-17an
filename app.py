@@ -15,7 +15,7 @@ def save_data(data):
         json.dump(data, f, indent=2)
 
 data = load_data()
-st.title("🏁 Manajemen Lomba 17 Agustusan")
+st.title("🏁 Manajemen Lomba bggg 17 Agustusan")
 st.subheader("Karang Taruna Bina Bhakti")
 
 menu = st.sidebar.radio("Menu", [
