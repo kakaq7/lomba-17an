@@ -44,7 +44,7 @@ def generate_pdf(data):
 # ------------------- Aplikasi -------------------
 
 data = load_data()
-st.title("🏁 Manajemen Lomba hgdg 17 Agustusan")
+st.title("🏁 Manajemen Lomba bvcf 17 Agustusan")
 st.subheader("Karang Taruna Bina Bhakti")
 
 menu = st.sidebar.radio("Menu", [
