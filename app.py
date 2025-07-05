@@ -88,24 +88,21 @@ elif menu == "Final & Juara":
                 save_data(data)
                 st.success("Pemenang final telah disimpan.")
 
-# -------------------- LIHAT SEMUA --------------------
+# -------------------- LIHAT SEMUA (Hanya Juara) --------------------
 elif menu == "Lihat Semua":
     if not data:
         st.info("Belum ada data lomba.")
     else:
+        st.markdown("## 🏆 Daftar Juara Lomba")
+        juara_ditemukan = False
         for nama, info in data.items():
-            st.markdown(f"### 🏁 {nama}")
-            st.markdown("**Peserta:**")
-            for p in info["peserta"]:
-                st.write(f"- {p}")
-            if info["lolos_kualifikasi"]:
-                st.markdown("**✅ Lolos Kualifikasi:**")
-                for p in info["lolos_kualifikasi"]:
-                    st.write(f"- {p}")
             if info["pemenang"]:
-                st.markdown("**🏆 Pemenang:**")
+                juara_ditemukan = True
+                st.markdown(f"### 🏁 {nama}")
                 for i, p in enumerate(info["pemenang"], 1):
                     st.write(f"Juara {i}: {p}")
+        if not juara_ditemukan:
+            st.info("Belum ada lomba yang memiliki juara.")
 
 # -------------------- HAPUS LOMBA --------------------
 elif menu == "Hapus Lomba":
@@ -131,7 +128,7 @@ elif menu == "Hapus Peserta":
             peserta_hapus = st.selectbox("Pilih Peserta yang Ingin Dihapus", peserta_list)
             if st.button("Hapus Peserta Ini"):
                 data[nama_lomba]["peserta"].remove(peserta_hapus)
-                # Pastikan juga dihapus dari kualifikasi/pemenang jika ada
+                # Hapus juga dari kualifikasi/pemenang jika ada
                 if peserta_hapus in data[nama_lomba]["lolos_kualifikasi"]:
                     data[nama_lomba]["lolos_kualifikasi"].remove(peserta_hapus)
                 if peserta_hapus in data[nama_lomba]["pemenang"]:
