@@ -3,6 +3,7 @@ import json
 import os
 from fpdf import FPDF
 from datetime import datetime
+from pytz import timezone
 
 # ====== File Storage ======
 ACCOUNT_FILE = "akun_karangtaruna.json"
@@ -36,8 +37,9 @@ def save_acara(data): save_json(ACARA_FILE, data)
 def is_acara_berlangsung(waktu_str):
     try:
         waktu = datetime.strptime(waktu_str, "%Y-%m-%d %H:%M")
-        now = datetime.now()
-        return waktu.date() == now.date()  # semua acara hari ini aktif
+        waktu = timezone('Asia/Jakarta').localize(waktu)
+        now = datetime.now(timezone('Asia/Jakarta'))
+        return waktu.date() == now.date()
     except:
         return False
 
@@ -154,7 +156,7 @@ if main_menu == "Manajemen Anggota":
         st.subheader("✅ Absensi Kehadiran")
 
         # 🔍 DEBUG ACARA
-        st.write("⏰ Debug sekarang:", datetime.now())
+        st.write("⏰ Debug sekarang:", datetime.now(timezone('Asia/Jakarta')))
         for acara in acara_list:
             st.write(f"📅 Acara: {acara['nama']} - Waktu: {acara['waktu']} - Tampil: {is_acara_berlangsung(acara['waktu'])}")
 
