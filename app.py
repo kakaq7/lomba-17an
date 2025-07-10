@@ -132,110 +132,8 @@ else:
 st.title("\U0001F1EE\U0001F1E9 Aplikasi Karang Taruna Bina Bhakti")
 main_menu = st.sidebar.selectbox("Pilih Menu Utama", ["Manajemen Lomba", "Manajemen Anggota"])
 
-# ====== Manajemen Lomba ======
-data = load_data()
-
-if main_menu == "Manajemen Lomba":
-    menu = st.sidebar.radio("Menu", [
-        "Tambah Lomba", "Tambah Peserta",
-        "Kualifikasi", "Final & Juara",
-        "Lihat Semua", "Hapus Lomba", "Hapus Peserta"
-    ])
-
-    if menu == "Tambah Lomba":
-        nama_lomba = st.text_input("Nama Lomba Baru")
-        if st.button("Tambah Lomba"):
-            if nama_lomba in data:
-                st.warning("Lomba sudah ada!")
-            else:
-                data[nama_lomba] = {"peserta": [], "lolos_kualifikasi": [], "pemenang": []}
-                save_data(data)
-                st.success(f"Lomba '{nama_lomba}' ditambahkan.")
-
-    elif menu == "Tambah Peserta":
-        if not data:
-            st.warning("Belum ada lomba.")
-        else:
-            nama_lomba = st.selectbox("Pilih Lomba", list(data.keys()))
-            peserta = st.text_input("Nama Peserta")
-            if st.button("Tambah Peserta"):
-                data[nama_lomba]["peserta"].append(peserta)
-                save_data(data)
-                st.success(f"Peserta '{peserta}' ditambahkan ke '{nama_lomba}'.")
-
-    elif menu == "Kualifikasi":
-        nama_lomba = st.selectbox("Pilih Lomba", list(data.keys()))
-        peserta = data[nama_lomba]["peserta"]
-        if peserta:
-            dipilih = st.multiselect("Pilih yang Lolos Kualifikasi", peserta)
-            if st.button("Simpan Kualifikasi"):
-                data[nama_lomba]["lolos_kualifikasi"] = dipilih
-                save_data(data)
-                st.success("Peserta yang lolos kualifikasi berhasil disimpan.")
-        else:
-            st.info("Belum ada peserta.")
-
-    elif menu == "Final & Juara":
-        nama_lomba = st.selectbox("Pilih Lomba", list(data.keys()))
-        finalis = data[nama_lomba].get("lolos_kualifikasi", [])
-        if finalis:
-            juara1 = st.selectbox("Juara 1", [""] + finalis)
-            juara2 = st.selectbox("Juara 2", [""] + finalis)
-            juara3 = st.selectbox("Juara 3", [""] + finalis)
-            if st.button("Simpan Juara"):
-                pemenang = []
-                for j in [juara1, juara2, juara3]:
-                    if j and j not in pemenang:
-                        pemenang.append(j)
-                data[nama_lomba]["pemenang"] = pemenang
-                save_data(data)
-                st.success("Juara disimpan.")
-        else:
-            st.info("Belum ada finalis.")
-
-    elif menu == "Lihat Semua":
-        st.markdown("## \U0001F3C6 Daftar Juara Lomba")
-        ada = False
-        for nama, info in data.items():
-            if info["pemenang"]:
-                ada = True
-                st.markdown(f"### \U0001F3C1 {nama}")
-                for i, p in enumerate(info["pemenang"], 1):
-                    st.write(f"Juara {i}: {p}")
-        if not ada:
-            st.info("Belum ada lomba yang memiliki juara.")
-
-        if st.button("\U0001F4E5 Download PDF"):
-            pdf_file_path = generate_pdf(data)
-            with open(pdf_file_path, "rb") as f:
-                st.download_button(
-                    label="Unduh Daftar Juara PDF",
-                    data=f,
-                    file_name="daftar_juara_lomba.pdf",
-                    mime="application/pdf"
-                )
-
-    elif menu == "Hapus Lomba":
-        nama_lomba = st.selectbox("Pilih Lomba", list(data.keys()))
-        if st.button("Hapus Lomba"):
-            del data[nama_lomba]
-            save_data(data)
-            st.success(f"Lomba '{nama_lomba}' dihapus.")
-
-    elif menu == "Hapus Peserta":
-        nama_lomba = st.selectbox("Pilih Lomba", list(data.keys()))
-        peserta_list = data[nama_lomba]["peserta"]
-        peserta_hapus = st.selectbox("Pilih Peserta", peserta_list)
-        if st.button("Hapus Peserta"):
-            data[nama_lomba]["peserta"].remove(peserta_hapus)
-            for bagian in ["lolos_kualifikasi", "pemenang"]:
-                if peserta_hapus in data[nama_lomba][bagian]:
-                    data[nama_lomba][bagian].remove(peserta_hapus)
-            save_data(data)
-            st.success("Peserta dihapus.")
-
 # ====== Manajemen Anggota & Absensi ======
-elif main_menu == "Manajemen Anggota":
+if main_menu == "Manajemen Anggota":
     absensi_data = load_absensi()
     acara_list = load_acara()
 
@@ -254,6 +152,12 @@ elif main_menu == "Manajemen Anggota":
                 st.error("Format waktu salah. Gunakan YYYY-MM-DD HH:MM")
     else:
         st.subheader("✅ Absensi Kehadiran")
+
+        # 🔍 DEBUG ACARA
+        st.write("⏰ Debug sekarang:", datetime.now())
+        for acara in acara_list:
+            st.write(f"📅 Acara: {acara['nama']} - Waktu: {acara['waktu']} - Tampil: {is_acara_berlangsung(acara['waktu'])}")
+
         aktif = [a for a in acara_list if is_acara_berlangsung(a['waktu'])]
         if not aktif:
             st.info("Tidak ada acara yang sedang berlangsung hari ini.")
