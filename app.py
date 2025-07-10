@@ -77,7 +77,7 @@ accounts = load_accounts()
 if not st.session_state.login_success:
     menu_login = st.selectbox("Pilih Aksi", ["Login", "Daftar Akun Baru"])
     if menu_login == "Login":
-        st.title("\U0001F512 Login Anggota Karang Taruna")
+        st.title("🔐 Login Anggota Karang Taruna")
         username = st.text_input("Username")
         password = st.text_input("Password", type="password")
         if st.button("Login"):
@@ -89,7 +89,7 @@ if not st.session_state.login_success:
                 st.error("Username atau password salah")
         st.stop()
     else:
-        st.title("\U0001F4DD Daftar Akun Baru")
+        st.title("📝 Daftar Akun Baru")
         new_user = st.text_input("Buat Username")
         new_pass = st.text_input("Buat Password", type="password")
         invite_code = st.text_input("Kode Undangan")
@@ -110,17 +110,17 @@ if not st.session_state.login_success:
                 st.success("Akun berhasil dibuat. Silakan login.")
         st.stop()
 else:
-    st.sidebar.write(f"Hai, {st.session_state.username} \U0001F44B")
-    if st.sidebar.button("\U0001F513 Logout"):
+    st.sidebar.write(f"Hai, {st.session_state.username} 👋")
+    if st.sidebar.button("🔓 Logout"):
         st.session_state.clear()
         st.rerun()
 
     if st.session_state.username == "admin":
-        st.sidebar.markdown("### \U0001F511 Buat Kode Undangan Baru")
+        st.sidebar.markdown("### 🔐 Buat Kode Undangan Baru")
         new_code = st.sidebar.text_input("Masukkan Kode Baru")
+        codes_data = load_invite_codes()
+        kode_aktif = codes_data.get("kode_aktif", [])
         if st.sidebar.button("Tambah Kode"):
-            codes_data = load_invite_codes()
-            kode_aktif = codes_data.get("kode_aktif", [])
             if new_code in kode_aktif:
                 st.sidebar.warning("Kode sudah aktif.")
             elif new_code.strip() == "":
@@ -132,7 +132,7 @@ else:
                 st.sidebar.success(f"Kode '{new_code}' berhasil ditambahkan.")
 
 # ====== Menu Utama ======
-st.title("\U0001F1EE\U0001F1E9 Aplikasi Karang Taruna Bina Bhakti")
+st.title("🇮🇩 Aplikasi Karang Taruna Bina Bhakti")
 main_menu = st.sidebar.selectbox("Pilih Menu Utama", ["Manajemen Lomba", "Manajemen Anggota"])
 
 # ====== Manajemen Anggota ======
@@ -141,7 +141,7 @@ if main_menu == "Manajemen Anggota":
     acara_list = load_acara()
 
     if st.session_state.username == "admin":
-        st.subheader("\U0001F4C5 Buat Acara Baru")
+        st.subheader("📅 Buat Acara Baru")
         nama_acara = st.text_input("Nama Acara")
         waktu_acara = st.text_input("Waktu Acara (format: DD-MM-YYYY HH:MM)")
         token_kode = st.text_input("Kode Unik Absensi")
@@ -177,7 +177,6 @@ if main_menu == "Manajemen Anggota":
                     acara_list.pop(idx)
                     save_acara(acara_list)
                     st.success("Acara berhasil dihapus.")
-
     else:
         st.subheader("✅ Absensi Kehadiran")
 
@@ -206,7 +205,7 @@ if main_menu == "Manajemen Anggota":
 elif main_menu == "Manajemen Lomba":
     data = load_data()
 
-    st.subheader("\U0001F3C6 Tambah Lomba Baru")
+    st.subheader("🏆 Tambah Lomba Baru")
     nama_lomba = st.text_input("Nama Lomba")
     if st.button("➕ Tambahkan Lomba"):
         if nama_lomba in data:
@@ -218,7 +217,7 @@ elif main_menu == "Manajemen Lomba":
             save_data(data)
             st.success(f"Lomba '{nama_lomba}' berhasil ditambahkan.")
 
-    st.subheader("\U0001F464 Tambah Peserta")
+    st.subheader("👤 Tambah Peserta")
     selected_lomba = st.selectbox("Pilih Lomba", list(data.keys()) if data else [])
     peserta = st.text_input("Nama Peserta")
     if st.button("➕ Tambah Peserta"):
@@ -230,7 +229,7 @@ elif main_menu == "Manajemen Lomba":
             else:
                 st.warning("Peserta sudah terdaftar.")
 
-    st.subheader("\U0001F3C5 Tentukan Pemenang")
+    st.subheader("🏁 Tentukan Pemenang")
     if selected_lomba:
         peserta_lomba = data[selected_lomba]["peserta"]
         juara1 = st.selectbox("Juara 1", peserta_lomba, key="j1")
