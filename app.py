@@ -84,7 +84,8 @@ if not st.session_state.login_success:
             if username in accounts and accounts[username] == password:
                 st.session_state.login_success = True
                 st.session_state.username = username
-                st.experimental_rerun()
+                st.success("Login berhasil. Silakan klik tombol Muat Ulang di browser Anda.")
+st.stop()
             else:
                 st.error("Username atau password salah")
         st.stop()
