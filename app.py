@@ -1,4 +1,273 @@
-(akan saya isi setelah setup file
+import streamlit as st
+import json
+import os
+from fpdf import FPDF
+from datetime import datetime
+
+# ====== File Storage ======
+ACCOUNT_FILE = "akun_karangtaruna.json"
+INVITE_FILE = "invite_codes.json"
+DATA_FILE = "data_lomba.json"
+ABSENSI_FILE = "absensi_anggota.json"
+ACARA_FILE = "daftar_acara.json"
+
+# ====== Helpers ======
+def load_json(file, default):
+    if os.path.exists(file):
+        with open(file, "r") as f:
+            return json.load(f)
+    return default
+
+def save_json(file, data):
+    with open(file, "w") as f:
+        json.dump(data, f, indent=2)
+
+# Data loaders
+def load_accounts(): return load_json(ACCOUNT_FILE, {})
+def save_accounts(data): save_json(ACCOUNT_FILE, data)
+def load_invite_codes(): return load_json(INVITE_FILE, [])
+def save_invite_codes(data): save_json(INVITE_FILE, data)
+def load_data(): return load_json(DATA_FILE, {})
+def save_data(data): save_json(DATA_FILE, data)
+def load_absensi(): return load_json(ABSENSI_FILE, {})
+def save_absensi(data): save_json(ABSENSI_FILE, data)
+def load_acara(): return load_json(ACARA_FILE, [])
+def save_acara(data): save_json(ACARA_FILE, data)
+
+def is_acara_berlangsung(waktu_str):
+    try:
+        waktu = datetime.strptime(waktu_str, "%Y-%m-%d %H:%M")
+        now = datetime.now()
+        return abs((now - waktu).total_seconds()) < 7200  # ±2 jam
+    except:
+        return False
+
+def generate_pdf(data):
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", "B", 16)
+    pdf.cell(0, 10, "Daftar Juara Lomba 17 Agustusan", ln=True, align="C")
+    pdf.ln(5)
+    ada = False
+    for nama_lomba, info in data.items():
+        if info.get("pemenang"):
+            ada = True
+            pdf.set_font("Arial", "B", 12)
+            pdf.cell(0, 10, f"Lomba: {nama_lomba}", ln=True)
+            pdf.set_font("Arial", "", 11)
+            for i, peserta in enumerate(info["pemenang"], 1):
+                pdf.cell(0, 8, f"Juara {i}: {peserta}", ln=True)
+            pdf.ln(4)
+    if not ada:
+        pdf.set_font("Arial", "", 12)
+        pdf.cell(0, 10, "Belum ada lomba yang memiliki juara.", ln=True)
+    file_path = "daftar_juara_lomba.pdf"
+    pdf.output(file_path)
+    return file_path
+
+# ====== Session Login ======
+if "login_success" not in st.session_state:
+    st.session_state.login_success = False
+if "username" not in st.session_state:
+    st.session_state.username = ""
+
+accounts = load_accounts()
+
+if not st.session_state.login_success:
+    menu_login = st.selectbox("Pilih Aksi", ["Login", "Daftar Akun Baru"])
+    if menu_login == "Login":
+        st.title("🔐 Login Anggota Karang Taruna")
+        username = st.text_input("Username")
+        password = st.text_input("Password", type="password")
+        if st.button("Login"):
+            if username in accounts and accounts[username] == password:
+                st.session_state.login_success = True
+                st.session_state.username = username
+                st.rerun()
+            else:
+                st.error("Username atau password salah")
+        st.stop()
+    else:
+        st.title("📝 Daftar Akun Baru")
+        new_user = st.text_input("Buat Username")
+        new_pass = st.text_input("Buat Password", type="password")
+        invite_code = st.text_input("Kode Undangan")
+
+        invite_codes = load_invite_codes()
+
+        if st.button("Daftar"):
+            if new_user in accounts:
+                st.warning("Username sudah terdaftar.")
+            elif not new_user or not new_pass or not invite_code:
+                st.warning("Isi semua kolom.")
+            elif invite_code not in invite_codes:
+                st.error("Kode undangan tidak valid atau sudah digunakan.")
+            else:
+                accounts[new_user] = new_pass
+                save_accounts(accounts)
+                invite_codes.remove(invite_code)
+                save_invite_codes(invite_codes)
+                st.success("Akun berhasil dibuat. Silakan login.")
+        st.stop()
+else:
+    st.sidebar.write(f"Hai, {st.session_state.username} 👋")
+    if st.sidebar.button("🔓 Logout"):
+        st.session_state.clear()
+        st.rerun()
+
+    if st.session_state.username == "admin":
+        st.sidebar.markdown("### 🔑 Buat Kode Undangan Baru")
+        new_code = st.sidebar.text_input("Masukkan Kode Baru")
+        if st.sidebar.button("Tambah Kode"):
+            codes = load_invite_codes()
+            if new_code in codes:
+                st.sidebar.warning("Kode sudah ada.")
+            elif new_code.strip() == "":
+                st.sidebar.warning("Kode tidak boleh kosong.")
+            else:
+                codes.append(new_code)
+                save_invite_codes(codes)
+                st.sidebar.success(f"Kode '{new_code}' berhasil ditambahkan.")
+
+# ====== Menu Utama ======
+st.title("🇮🇩 Aplikasi Karang Taruna Bina Bhakti")
+main_menu = st.sidebar.selectbox("Pilih Menu Utama", ["Manajemen Lomba", "Manajemen Anggota"])
+
+# ====== Manajemen Lomba ======
+data = load_data()
+
+if main_menu == "Manajemen Lomba":
+    menu = st.sidebar.radio("Menu", [
+        "Tambah Lomba", "Tambah Peserta",
+        "Kualifikasi", "Final & Juara",
+        "Lihat Semua", "Hapus Lomba", "Hapus Peserta"
+    ])
+
+    if menu == "Tambah Lomba":
+        nama_lomba = st.text_input("Nama Lomba Baru")
+        if st.button("Tambah Lomba"):
+            if nama_lomba in data:
+                st.warning("Lomba sudah ada!")
+            else:
+                data[nama_lomba] = {"peserta": [], "lolos_kualifikasi": [], "pemenang": []}
+                save_data(data)
+                st.success(f"Lomba '{nama_lomba}' ditambahkan.")
+
+    elif menu == "Tambah Peserta":
+        if not data:
+            st.warning("Belum ada lomba.")
+        else:
+            nama_lomba = st.selectbox("Pilih Lomba", list(data.keys()))
+            peserta = st.text_input("Nama Peserta")
+            if st.button("Tambah Peserta"):
+                data[nama_lomba]["peserta"].append(peserta)
+                save_data(data)
+                st.success(f"Peserta '{peserta}' ditambahkan ke '{nama_lomba}'.")
+
+    elif menu == "Kualifikasi":
+        nama_lomba = st.selectbox("Pilih Lomba", list(data.keys()))
+        peserta = data[nama_lomba]["peserta"]
+        if peserta:
+            dipilih = st.multiselect("Pilih yang Lolos Kualifikasi", peserta)
+            if st.button("Simpan Kualifikasi"):
+                data[nama_lomba]["lolos_kualifikasi"] = dipilih
+                save_data(data)
+                st.success("Peserta yang lolos kualifikasi berhasil disimpan.")
+        else:
+            st.info("Belum ada peserta.")
+
+    elif menu == "Final & Juara":
+        nama_lomba = st.selectbox("Pilih Lomba", list(data.keys()))
+        finalis = data[nama_lomba].get("lolos_kualifikasi", [])
+        if finalis:
+            juara1 = st.selectbox("Juara 1", [""] + finalis)
+            juara2 = st.selectbox("Juara 2", [""] + finalis)
+            juara3 = st.selectbox("Juara 3", [""] + finalis)
+            if st.button("Simpan Juara"):
+                pemenang = []
+                for j in [juara1, juara2, juara3]:
+                    if j and j not in pemenang:
+                        pemenang.append(j)
+                data[nama_lomba]["pemenang"] = pemenang
+                save_data(data)
+                st.success("Juara disimpan.")
+        else:
+            st.info("Belum ada finalis.")
+
+    elif menu == "Lihat Semua":
+        st.markdown("## 🏆 Daftar Juara Lomba")
+        ada = False
+        for nama, info in data.items():
+            if info["pemenang"]:
+                ada = True
+                st.markdown(f"### 🏁 {nama}")
+                for i, p in enumerate(info["pemenang"], 1):
+                    st.write(f"Juara {i}: {p}")
+        if not ada:
+            st.info("Belum ada lomba yang memiliki juara.")
+
+        if st.button("📥 Download PDF"):
+            pdf_file_path = generate_pdf(data)
+            with open(pdf_file_path, "rb") as f:
+                st.download_button(
+                    label="Unduh Daftar Juara PDF",
+                    data=f,
+                    file_name="daftar_juara_lomba.pdf",
+                    mime="application/pdf"
+                )
+
+    elif menu == "Hapus Lomba":
+        nama_lomba = st.selectbox("Pilih Lomba", list(data.keys()))
+        if st.button("Hapus Lomba"):
+            del data[nama_lomba]
+            save_data(data)
+            st.success(f"Lomba '{nama_lomba}' dihapus.")
+
+    elif menu == "Hapus Peserta":
+        nama_lomba = st.selectbox("Pilih Lomba", list(data.keys()))
+        peserta_list = data[nama_lomba]["peserta"]
+        peserta_hapus = st.selectbox("Pilih Peserta", peserta_list)
+        if st.button("Hapus Peserta"):
+            data[nama_lomba]["peserta"].remove(peserta_hapus)
+            for bagian in ["lolos_kualifikasi", "pemenang"]:
+                if peserta_hapus in data[nama_lomba][bagian]:
+                    data[nama_lomba][bagian].remove(peserta_hapus)
+            save_data(data)
+            st.success("Peserta dihapus.")
+
+# ====== Manajemen Anggota & Absensi ======
+elif main_menu == "Manajemen Anggota":
+    absensi_data = load_absensi()
+    acara_list = load_acara()
+
+    if st.session_state.username == "admin":
+        st.subheader("📅 Buat Acara Baru")
+        nama_acara = st.text_input("Nama Acara")
+        waktu_acara = st.text_input("Waktu Acara (format: YYYY-MM-DD HH:MM)")
+        token_kode = st.text_input("Kode Unik Absensi")
+        if st.button("➕ Simpan Acara"):
+            try:
+                datetime.strptime(waktu_acara, "%Y-%m-%d %H:%M")
+                acara_list.append({
+                    "nama": nama_acara,
+                    "waktu": waktu_acara,
+                    "token": token_kode
+                })
+                save_acara(acara_list)
+                st.success("Acara berhasil ditambahkan.")
+            except:
+                st.error("Format waktu salah. Gunakan YYYY-MM-DD HH:MM")
+
+    else:
+        st.subheader("✅ Absensi Kehadiran")
+        aktif = [a for a in acara_list if is_acara_berlangsung(a['waktu'])]
+        if not aktif:
+            st.info("Tidak ada acara yang sedang berlangsung.")
+        else:
+            selected = st.selectbox("Pilih Acara", [f"{a['nama']} ({a['waktu']})" for a in aktif])
+            nama = st.text_input("Nama Anggota")
+            kode = st.text_input("Masukkan Kode Absensi")
+            acara_dipilih = next((a for a in aktif if f"{a['nama']} ({a['waktu']})" == selected), None)
             if st.button("✅ Absen Hadir"):
                 if not kode or kode != acara_dipilih["token"]:
                     st.error("Kode absensi salah atau tidak valid.")
@@ -6,9 +275,14 @@
                     if selected not in absensi_data:
                         absensi_data[selected] = []
                     if nama in absensi_data[selected]:
-                        st.warning(f"'{nama}' sudah tercatat hadir di '{selected}'.")
+                        st.warning(f"'{nama}' sudah absen di '{selected}'.")
                     else:
                         absensi_data[selected].append(nama)
                         save_absensi(absensi_data)
                         st.success(f"'{nama}' berhasil absen di '{selected}'.")
-)
+
+    st.markdown("### 📋 Daftar Kehadiran")
+    for event, hadir in absensi_data.items():
+        st.markdown(f"**{event}**")
+        for orang in hadir:
+            st.write(f"- {orang}")
