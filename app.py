@@ -25,7 +25,7 @@ def save_json(file, data):
 
 def load_accounts(): return load_json(ACCOUNT_FILE, {})
 def save_accounts(data): save_json(ACCOUNT_FILE, data)
-def load_invite_codes(): return load_json(INVITE_FILE, [])
+def load_invite_codes(): return load_json(INVITE_FILE, {"kode_aktif": []})
 def save_invite_codes(data): save_json(INVITE_FILE, data)
 def load_data(): return load_json(DATA_FILE, {})
 def save_data(data): save_json(DATA_FILE, data)
@@ -94,20 +94,19 @@ if not st.session_state.login_success:
         new_pass = st.text_input("Buat Password", type="password")
         invite_code = st.text_input("Kode Undangan")
 
-        invite_codes = load_invite_codes()
+        invite_codes_data = load_invite_codes()
+        kode_aktif = invite_codes_data.get("kode_aktif", [])
 
         if st.button("Daftar"):
             if new_user in accounts:
                 st.warning("Username sudah terdaftar.")
             elif not new_user or not new_pass or not invite_code:
                 st.warning("Isi semua kolom.")
-            elif invite_code not in invite_codes:
-                st.error("Kode undangan tidak valid atau sudah digunakan.")
+            elif invite_code not in kode_aktif:
+                st.error("Kode undangan tidak valid.")
             else:
                 accounts[new_user] = new_pass
                 save_accounts(accounts)
-                invite_codes.remove(invite_code)
-                save_invite_codes(invite_codes)
                 st.success("Akun berhasil dibuat. Silakan login.")
         st.stop()
 else:
@@ -120,21 +119,23 @@ else:
         st.sidebar.markdown("### \U0001F511 Buat Kode Undangan Baru")
         new_code = st.sidebar.text_input("Masukkan Kode Baru")
         if st.sidebar.button("Tambah Kode"):
-            codes = load_invite_codes()
-            if new_code in codes:
-                st.sidebar.warning("Kode sudah ada.")
+            codes_data = load_invite_codes()
+            kode_aktif = codes_data.get("kode_aktif", [])
+            if new_code in kode_aktif:
+                st.sidebar.warning("Kode sudah aktif.")
             elif new_code.strip() == "":
                 st.sidebar.warning("Kode tidak boleh kosong.")
             else:
-                codes.append(new_code)
-                save_invite_codes(codes)
+                kode_aktif.append(new_code)
+                codes_data["kode_aktif"] = kode_aktif
+                save_invite_codes(codes_data)
                 st.sidebar.success(f"Kode '{new_code}' berhasil ditambahkan.")
 
 # ====== Menu Utama ======
 st.title("\U0001F1EE\U0001F1E9 Aplikasi Karang Taruna Bina Bhakti")
 main_menu = st.sidebar.selectbox("Pilih Menu Utama", ["Manajemen Lomba", "Manajemen Anggota"])
 
-# ====== Manajemen Anggota & Absensi ======
+# ====== Manajemen Anggota ======
 if main_menu == "Manajemen Anggota":
     absensi_data = load_absensi()
     acara_list = load_acara()
@@ -152,6 +153,31 @@ if main_menu == "Manajemen Anggota":
                 st.success("Acara berhasil ditambahkan.")
             except:
                 st.error("Format waktu salah. Gunakan DD-MM-YYYY HH:MM")
+
+        st.subheader("✏️ Edit atau Hapus Acara")
+        if acara_list:
+            list_judul = [f"{a['nama']} - {a['waktu']}" for a in acara_list]
+            idx = st.selectbox("Pilih Acara", range(len(acara_list)), format_func=lambda x: list_judul[x])
+            selected_event = acara_list[idx]
+            new_nama = st.text_input("Edit Nama Acara", value=selected_event["nama"], key="edit_nama")
+            new_waktu = st.text_input("Edit Waktu Acara (DD-MM-YYYY HH:MM)", value=selected_event["waktu"], key="edit_waktu")
+            new_token = st.text_input("Edit Kode Absensi", value=selected_event["token"], key="edit_token")
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.button("💾 Simpan Perubahan"):
+                    try:
+                        datetime.strptime(new_waktu, "%d-%m-%Y %H:%M")
+                        acara_list[idx] = {"nama": new_nama, "waktu": new_waktu, "token": new_token}
+                        save_acara(acara_list)
+                        st.success("Acara berhasil diperbarui.")
+                    except:
+                        st.error("Format waktu salah. Gunakan DD-MM-YYYY HH:MM")
+            with col2:
+                if st.button("🗑 Hapus Acara"):
+                    acara_list.pop(idx)
+                    save_acara(acara_list)
+                    st.success("Acara berhasil dihapus.")
+
     else:
         st.subheader("✅ Absensi Kehadiran")
 
@@ -175,12 +201,6 @@ if main_menu == "Manajemen Anggota":
                         absensi_data[selected].append(st.session_state.username)
                         save_absensi(absensi_data)
                         st.success(f"'{st.session_state.username}' berhasil absen di '{selected}'.")
-
-    st.markdown("### \U0001F4CB Daftar Kehadiran")
-    for event, hadir in absensi_data.items():
-        st.markdown(f"**{event}**")
-        for orang in hadir:
-            st.write(f"- {orang}")
 
 # ====== Manajemen Lomba ======
 elif main_menu == "Manajemen Lomba":
