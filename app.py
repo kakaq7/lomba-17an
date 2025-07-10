@@ -3,29 +3,63 @@ import json
 import os
 from fpdf import FPDF
 
+# ====== PENYIMPANAN AKUN ======
+ACCOUNT_FILE = "akun_karangtaruna.json"
 
-# ==== LOGIN HALAMAN PENUH ====
+def load_accounts():
+    if os.path.exists(ACCOUNT_FILE):
+        with open(ACCOUNT_FILE, "r") as f:
+            return json.load(f)
+    return {}
+
+def save_accounts(accounts):
+    with open(ACCOUNT_FILE, "w") as f:
+        json.dump(accounts, f, indent=2)
+
+# ====== SISTEM LOGIN, DAFTAR, LOGOUT ======
 if "login_success" not in st.session_state:
     st.session_state.login_success = False
+if "username" not in st.session_state:
+    st.session_state.username = ""
+
+accounts = load_accounts()
 
 if not st.session_state.login_success:
-    st.title("🔐 Login Anggota Karang Taruna")
-    akun_valid = {
-        "bina": "bhakti123",
-        "admin": "merdeka45"
-    }
+    menu_login = st.selectbox("Pilih Aksi", ["Login", "Daftar Akun Baru"])
+    if menu_login == "Login":
+        st.title("🔐 Login Anggota Karang Taruna")
+        username = st.text_input("Username")
+        password = st.text_input("Password", type="password")
+        if st.button("Login"):
+            if username in accounts and accounts[username] == password:
+                st.success("Login berhasil")
+                st.session_state.login_success = True
+                st.session_state.username = username
+            else:
+                st.error("Username atau password salah")
+        st.stop()
+    else:
+        st.title("📝 Daftar Akun Baru")
+        new_user = st.text_input("Buat Username")
+        new_pass = st.text_input("Buat Password", type="password")
+        if st.button("Daftar"):
+            if new_user in accounts:
+                st.warning("Username sudah terdaftar.")
+            elif not new_user or not new_pass:
+                st.warning("Isi semua kolom.")
+            else:
+                accounts[new_user] = new_pass
+                save_accounts(accounts)
+                st.success("Akun berhasil dibuat. Silakan login.")
+        st.stop()
+else:
+    st.sidebar.write(f"Hai, {st.session_state.username} 👋")
+    if st.sidebar.button("🔓 Logout"):
+        st.session_state.login_success = False
+        st.session_state.username = ""
+        st.experimental_rerun()
 
-    username = st.text_input("Username")
-    password = st.text_input("Password", type="password")
-    if st.button("Login"):
-        if username in akun_valid and akun_valid[username] == password:
-            st.success("Login berhasil")
-            st.session_state.login_success = True
-        else:
-            st.error("Username atau password salah")
-    st.stop()
-
-
+# ====== APLIKASI UTAMA ======
 DATA_FILE = "data_lomba.json"
 
 def load_data():
