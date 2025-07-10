@@ -134,8 +134,56 @@ else:
 st.title("\U0001F1EE\U0001F1E9 Aplikasi Karang Taruna Bina Bhakti")
 main_menu = st.sidebar.selectbox("Pilih Menu Utama", ["Manajemen Lomba", "Manajemen Anggota"])
 
+# ====== Manajemen Anggota & Absensi ======
+if main_menu == "Manajemen Anggota":
+    absensi_data = load_absensi()
+    acara_list = load_acara()
+
+    if st.session_state.username == "admin":
+        st.subheader("\U0001F4C5 Buat Acara Baru")
+        nama_acara = st.text_input("Nama Acara")
+        waktu_acara = st.text_input("Waktu Acara (format: DD-MM-YYYY HH:MM)")
+        token_kode = st.text_input("Kode Unik Absensi")
+        if st.button("➕ Simpan Acara"):
+            try:
+                datetime.strptime(waktu_acara, "%d-%m-%Y %H:%M")
+                acara_list.append({"nama": nama_acara, "waktu": waktu_acara, "token": token_kode})
+                save_acara(acara_list)
+                st.success("Acara berhasil ditambahkan.")
+            except:
+                st.error("Format waktu salah. Gunakan DD-MM-YYYY HH:MM")
+    else:
+        st.subheader("✅ Absensi Kehadiran")
+
+        aktif = [a for a in acara_list if is_acara_berlangsung(a['waktu'])]
+        if not aktif:
+            st.info("Tidak ada acara yang sedang berlangsung hari ini.")
+        else:
+            selected = st.selectbox("Pilih Acara", [f"{a['nama']} ({a['waktu']})" for a in aktif])
+            st.text_input("Nama Anggota", value=st.session_state.username, disabled=True)
+            kode = st.text_input("Masukkan Kode Absensi")
+            acara_dipilih = next((a for a in aktif if f"{a['nama']} ({a['waktu']})" == selected), None)
+            if st.button("✅ Absen Hadir"):
+                if not kode or kode != acara_dipilih["token"]:
+                    st.error("Kode absensi salah atau tidak valid.")
+                else:
+                    if selected not in absensi_data:
+                        absensi_data[selected] = []
+                    if st.session_state.username in absensi_data[selected]:
+                        st.warning(f"'{st.session_state.username}' sudah absen di '{selected}'.")
+                    else:
+                        absensi_data[selected].append(st.session_state.username)
+                        save_absensi(absensi_data)
+                        st.success(f"'{st.session_state.username}' berhasil absen di '{selected}'.")
+
+    st.markdown("### \U0001F4CB Daftar Kehadiran")
+    for event, hadir in absensi_data.items():
+        st.markdown(f"**{event}**")
+        for orang in hadir:
+            st.write(f"- {orang}")
+
 # ====== Manajemen Lomba ======
-if main_menu == "Manajemen Lomba":
+elif main_menu == "Manajemen Lomba":
     data = load_data()
 
     st.subheader("\U0001F3C6 Tambah Lomba Baru")
@@ -204,51 +252,3 @@ if main_menu == "Manajemen Lomba":
             st.success(f"Peserta '{peserta_hapus}' dihapus dari '{selected_lomba}'.")
         else:
             st.warning("Peserta tidak ditemukan di lomba tersebut.")
-
-# ====== Manajemen Anggota & Absensi ======
-elif main_menu == "Manajemen Anggota":
-    absensi_data = load_absensi()
-    acara_list = load_acara()
-
-    if st.session_state.username == "admin":
-        st.subheader("\U0001F4C5 Buat Acara Baru")
-        nama_acara = st.text_input("Nama Acara")
-        waktu_acara = st.text_input("Waktu Acara (format: DD-MM-YYYY HH:MM)")
-        token_kode = st.text_input("Kode Unik Absensi")
-        if st.button("➕ Simpan Acara"):
-            try:
-                datetime.strptime(waktu_acara, "%d-%m-%Y %H:%M")
-                acara_list.append({"nama": nama_acara, "waktu": waktu_acara, "token": token_kode})
-                save_acara(acara_list)
-                st.success("Acara berhasil ditambahkan.")
-            except:
-                st.error("Format waktu salah. Gunakan DD-MM-YYYY HH:MM")
-    else:
-        st.subheader("✅ Absensi Kehadiran")
-
-        aktif = [a for a in acara_list if is_acara_berlangsung(a['waktu'])]
-        if not aktif:
-            st.info("Tidak ada acara yang sedang berlangsung hari ini.")
-        else:
-            selected = st.selectbox("Pilih Acara", [f"{a['nama']} ({a['waktu']})" for a in aktif])
-            nama = st.text_input("Nama Anggota")
-            kode = st.text_input("Masukkan Kode Absensi")
-            acara_dipilih = next((a for a in aktif if f"{a['nama']} ({a['waktu']})" == selected), None)
-            if st.button("✅ Absen Hadir"):
-                if not kode or kode != acara_dipilih["token"]:
-                    st.error("Kode absensi salah atau tidak valid.")
-                else:
-                    if selected not in absensi_data:
-                        absensi_data[selected] = []
-                    if nama in absensi_data[selected]:
-                        st.warning(f"'{nama}' sudah absen di '{selected}'.")
-                    else:
-                        absensi_data[selected].append(nama)
-                        save_absensi(absensi_data)
-                        st.success(f"'{nama}' berhasil absen di '{selected}'.")
-
-    st.markdown("### \U0001F4CB Daftar Kehadiran")
-    for event, hadir in absensi_data.items():
-        st.markdown(f"**{event}**")
-        for orang in hadir:
-            st.write(f"- {orang}")
