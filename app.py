@@ -94,8 +94,8 @@ if not st.session_state.login_success:
         new_pass = st.text_input("Buat Password", type="password")
         invite_code = st.text_input("Kode Undangan")
 
-        invite_codes_data = load_invite_codes()
-        kode_aktif = invite_codes_data.get("kode_aktif", [])
+        codes_data = load_invite_codes()
+        kode_aktif = codes_data.get("kode_aktif", [])
 
         if st.button("Daftar"):
             if new_user in accounts:
@@ -117,9 +117,9 @@ else:
 
     if st.session_state.username == "admin":
         st.sidebar.markdown("### 🔐 Buat Kode Undangan Baru")
-        new_code = st.sidebar.text_input("Masukkan Kode Baru")
         codes_data = load_invite_codes()
         kode_aktif = codes_data.get("kode_aktif", [])
+        new_code = st.sidebar.text_input("Masukkan Kode Baru")
         if st.sidebar.button("Tambah Kode"):
             if new_code in kode_aktif:
                 st.sidebar.warning("Kode sudah aktif.")
@@ -179,7 +179,6 @@ if main_menu == "Manajemen Anggota":
                     st.success("Acara berhasil dihapus.")
     else:
         st.subheader("✅ Absensi Kehadiran")
-
         aktif = [a for a in acara_list if is_acara_berlangsung(a['waktu'])]
         if not aktif:
             st.info("Tidak ada acara yang sedang berlangsung hari ini.")
