@@ -3,6 +3,10 @@ import json
 import os
 from datetime import datetime
 from fpdf import FPDF
+from pytz import timezone
+
+# === Zona Waktu Indonesia ===
+wib = timezone("Asia/Jakarta")
 
 # === File Path ===
 DATA_FILE = "data_lomba.json"
@@ -44,7 +48,7 @@ if not st.session_state.login:
             if user in users and users[user] == pw:
                 st.session_state.login = True
                 st.session_state.username = user
-                st.success("Login berhasil")
+                st.success("Login berhasil. Silakan klik tombol Muat Ulang di browser Anda.")
                 st.stop()
             else:
                 st.error("Username atau password salah.")
@@ -158,29 +162,30 @@ if menu == "Manajemen Anggota":
     if st.session_state.username == "admin":
         st.header("📅 Buat Acara")
         judul = st.text_input("Nama Acara")
-        waktu = st.text_input("Tanggal & Jam (dd-mm-yyyy hh:mm)")
+        waktu_str = st.text_input("Tanggal & Jam (dd-mm-yyyy hh:mm)")
         kode = st.text_input("Kode Absensi")
         if st.button("Simpan Acara"):
             try:
-                datetime.strptime(waktu, "%d-%m-%Y %H:%M")
-                acara.append({"judul": judul, "waktu": waktu, "kode": kode})
+                waktu = datetime.strptime(waktu_str, "%d-%m-%Y %H:%M")
+                waktu_str_wib = waktu.strftime("%d-%m-%Y %H:%M")
+                acara.append({"judul": judul, "waktu": waktu_str_wib, "kode": kode})
                 save_json(ACARA_FILE, acara)
                 st.success("Acara berhasil dibuat.")
             except:
                 st.error("Format waktu salah.")
 
     st.header("📍 Absensi Kehadiran")
-    now = datetime.now().strftime("%d-%m-%Y")
-    aktif = [a for a in acara if a["waktu"].startswith(now)]
+    hari_ini = datetime.now(wib).strftime("%d-%m-%Y")
+    aktif = [a for a in acara if a["waktu"].startswith(hari_ini)]
     if not aktif:
         st.info("Tidak ada acara hari ini.")
     else:
-        pilihan = st.selectbox("Pilih Acara", [f'{a['judul']} - {a['waktu']}' for a in aktif])
-        dipilih = next((a for a in aktif if f'{a['judul']} - {a['waktu']}' == pilihan), None)
+        pilihan = st.selectbox("Pilih Acara", [f'{a["judul"]} - {a["waktu"]}' for a in aktif])
+        dipilih = next((a for a in aktif if f'{a["judul"]} - {a["waktu"]}' == pilihan), None)
         st.text_input("Nama", value=st.session_state.username, disabled=True)
-        kode = st.text_input("Masukkan Kode Absensi")
+        kode_input = st.text_input("Masukkan Kode Absensi")
         if st.button("Absen Sekarang"):
-            if kode != dipilih["kode"]:
+            if kode_input != dipilih["kode"]:
                 st.error("Kode salah.")
             else:
                 if pilihan not in absen:
