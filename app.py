@@ -38,11 +38,10 @@ if "admin" not in users:
     save_json(USER_FILE, users)
 
 # === Login/Register ===
-st.title("🇮🇩Aplikasi Karang Taruna Bina Bhakti")
 if not st.session_state.login:
     mode = st.selectbox("Pilih", ["Login", "Daftar Akun"])
     if mode == "Login":
-        st.title("Login Anggota Karang Taruna")
+        st.title("Login Karang Taruna")
         user = st.text_input("Username")
         pw = st.text_input("Password", type="password")
         if st.button("Login"):
@@ -94,6 +93,7 @@ if st.session_state.username == "admin":
 
 # === Menu Utama ===
 menu = st.sidebar.selectbox("Menu", ["Manajemen Lomba", "Manajemen Anggota"])
+st.title("Aplikasi Karang Taruna Bina Bhakti")
 
 # === MANFA LOMBA ===
 if menu == "Manajemen Lomba":
@@ -174,11 +174,11 @@ if menu == "Manajemen Anggota":
             except:
                 st.error("Format waktu salah.")
 
-        st.header("📊 Daftar Absensi Seluruh Acara")
+        st.header("📊 Daftar & Kelola Acara")
         if not acara:
             st.info("Belum ada acara.")
         else:
-            for ac in acara:
+            for i, ac in enumerate(acara):
                 key = f"{ac['judul']} - {ac['waktu']}"
                 daftar = absen.get(key, [])
                 st.subheader(key)
@@ -187,6 +187,21 @@ if menu == "Manajemen Anggota":
                         st.write(f"✅ {nama}")
                 else:
                     st.write("❌ Belum ada yang absen")
+
+                if st.button(f"✏️ Edit {key}"):
+                    new_judul = st.text_input("Edit Nama Acara", value=ac["judul"], key=f"edit_judul_{i}")
+                    new_waktu = st.text_input("Edit Tanggal & Jam (dd-mm-yyyy hh:mm)", value=ac["waktu"], key=f"edit_waktu_{i}")
+                    new_kode = st.text_input("Edit Kode Absensi", value=ac["kode"], key=f"edit_kode_{i}")
+                    if st.button(f"Simpan Perubahan {key}"):
+                        acara[i] = {"judul": new_judul, "waktu": new_waktu, "kode": new_kode}
+                        save_json(ACARA_FILE, acara)
+                        st.success("Acara diperbarui.")
+                        st.experimental_rerun()
+                if st.button(f"🗑️ Hapus {key}"):
+                    acara.pop(i)
+                    save_json(ACARA_FILE, acara)
+                    st.success("Acara dihapus.")
+                    st.experimental_rerun()
 
     else:
         st.header("📍 Absensi Kehadiran")
