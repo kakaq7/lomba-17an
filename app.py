@@ -33,7 +33,7 @@ if "login" not in st.session_state:
 
 if st.session_state.get("rerun", False):
     st.session_state.rerun = False
-    st.experimental_rerun()
+    st.stop()
 
 # === Akun Admin Default ===
 users = load_json(USER_FILE, {})
@@ -52,7 +52,8 @@ if not st.session_state.login:
             if user in users and users[user] == pw:
                 st.session_state.login = True
                 st.session_state.username = user
-                st.experimental_rerun()
+                st.session_state.rerun = True
+                st.stop()
             else:
                 st.error("Username atau password salah.")
     else:
@@ -78,7 +79,8 @@ st.sidebar.write(f"👤 {st.session_state.username}")
 if st.sidebar.button("Logout"):
     st.session_state.clear()
     st.success("Berhasil logout.")
-    st.experimental_rerun()
+    st.session_state.rerun = True
+    st.stop()
 
 # === Admin: Kode Undangan ===
 if st.session_state.username == "admin":
@@ -169,6 +171,8 @@ elif menu == "Manajemen Anggota":
                 acara.append({"judul": judul, "waktu": waktu_str_wib, "kode": kode})
                 save_json(ACARA_FILE, acara)
                 st.success("Acara berhasil dibuat.")
+                st.session_state.rerun = True
+                st.stop()
             except:
                 st.error("Format waktu salah.")
 
@@ -195,14 +199,14 @@ elif menu == "Manajemen Anggota":
                     save_json(ACARA_FILE, acara)
                     st.success("Acara diperbarui.")
                     st.session_state.rerun = True
-                    st.experimental_rerun()
+                    st.stop()
 
             if st.button(f"🗑️ Hapus {key}"):
                 acara.pop(i)
                 save_json(ACARA_FILE, acara)
                 st.success("Acara dihapus.")
                 st.session_state.rerun = True
-                st.experimental_rerun()
+                st.stop()
 
         st.header("📈 Persentase Kehadiran Anggota")
         semua_user = [u for u in users if u != "admin"]
