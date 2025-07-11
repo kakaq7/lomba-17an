@@ -74,9 +74,9 @@ if not st.session_state.login:
 st.sidebar.title("Selamat datang")
 st.sidebar.write(f"👤 {st.session_state.username}")
 if st.sidebar.button("Logout"):
-    st.session_state.login = False
-    st.session_state.username = ""
-    st.experimental_rerun()
+    st.session_state.clear()
+    st.success("Berhasil logout. Silakan refresh halaman.")
+    st.stop()
 
 # === Admin: Kode Undangan ===
 if st.session_state.username == "admin":
