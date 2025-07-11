@@ -33,7 +33,7 @@ if "login" not in st.session_state:
 
 if st.session_state.get("rerun", False):
     st.session_state.rerun = False
-    st.stop()
+    st.experimental_rerun()
 
 # === Akun Admin Default ===
 users = load_json(USER_FILE, {})
@@ -52,8 +52,7 @@ if not st.session_state.login:
             if user in users and users[user] == pw:
                 st.session_state.login = True
                 st.session_state.username = user
-                st.success("Login berhasil. Silakan refresh halaman.")
-                st.stop()
+                st.experimental_rerun()
             else:
                 st.error("Username atau password salah.")
     else:
@@ -70,8 +69,7 @@ if not st.session_state.login:
             else:
                 users[user] = pw
                 save_json(USER_FILE, users)
-                st.success("Akun berhasil dibuat.")
-                st.stop()
+                st.success("Akun berhasil dibuat. Silakan login.")
     st.stop()
 
 # === Setelah Login ===
@@ -79,17 +77,17 @@ st.sidebar.title("Selamat datang")
 st.sidebar.write(f"👤 {st.session_state.username}")
 if st.sidebar.button("Logout"):
     st.session_state.clear()
-    st.success("Berhasil logout. Silakan refresh halaman.")
-    st.stop()
+    st.success("Berhasil logout.")
+    st.experimental_rerun()
 
 # === Admin: Kode Undangan ===
 if st.session_state.username == "admin":
     st.sidebar.title("Admin Panel")
     kode_baru = st.sidebar.text_input("Buat Kode Undangan Baru")
-    if st.sidebar.button("Tambah Kode"):
+    if st.sidebar.button("Perbarui Kode"):
         invites = {"aktif": kode_baru}
         save_json(INVITE_FILE, invites)
-        st.sidebar.success("Kode undangan diperbarui")
+        st.sidebar.success("Kode undangan diperbarui.")
 
 # === Menu Utama ===
 menu = st.sidebar.selectbox("Menu", ["Manajemen Lomba", "Manajemen Anggota"])
@@ -155,7 +153,7 @@ if menu == "Manajemen Lomba":
                 st.download_button("📥 Unduh PDF", f, file_name="juara.pdf")
 
 # === Manajemen Anggota ===
-if menu == "Manajemen Anggota":
+elif menu == "Manajemen Anggota":
     acara = load_json(ACARA_FILE, [])
     absen = load_json(ABSEN_FILE, {})
 
@@ -174,8 +172,11 @@ if menu == "Manajemen Anggota":
             except:
                 st.error("Format waktu salah.")
 
-        st.header("📊 Daftar & Kelola Acara")
-        for i, ac in enumerate(acara):
+        st.header("📊 Daftar Absensi")
+        tgl_mulai = st.date_input("Tanggal Mulai")
+        tgl_akhir = st.date_input("Tanggal Akhir")
+        acara_terfilter = [a for a in acara if tgl_mulai.strftime("%d-%m-%Y") <= a["waktu"][:10] <= tgl_akhir.strftime("%d-%m-%Y")]
+        for i, ac in enumerate(acara_terfilter):
             key = f"{ac['judul']} - {ac['waktu']}"
             daftar = absen.get(key, [])
             st.subheader(key)
@@ -187,30 +188,30 @@ if menu == "Manajemen Anggota":
 
             if st.button(f"✏️ Edit {key}"):
                 new_judul = st.text_input("Edit Nama Acara", value=ac["judul"], key=f"edit_judul_{i}")
-                new_waktu = st.text_input("Edit Tanggal & Jam (dd-mm-yyyy hh:mm)", value=ac["waktu"], key=f"edit_waktu_{i}")
+                new_waktu = st.text_input("Edit Tanggal & Jam", value=ac["waktu"], key=f"edit_waktu_{i}")
                 new_kode = st.text_input("Edit Kode Absensi", value=ac["kode"], key=f"edit_kode_{i}")
                 if st.button(f"Simpan Perubahan {key}"):
                     acara[i] = {"judul": new_judul, "waktu": new_waktu, "kode": new_kode}
                     save_json(ACARA_FILE, acara)
                     st.success("Acara diperbarui.")
                     st.session_state.rerun = True
-                    st.stop()
+                    st.experimental_rerun()
 
             if st.button(f"🗑️ Hapus {key}"):
                 acara.pop(i)
                 save_json(ACARA_FILE, acara)
                 st.success("Acara dihapus.")
                 st.session_state.rerun = True
-                st.stop()
+                st.experimental_rerun()
 
         st.header("📈 Persentase Kehadiran Anggota")
         semua_user = [u for u in users if u != "admin"]
-        total_acara = len(acara)
+        total_acara = len(acara_terfilter)
         if total_acara == 0:
-            st.info("Belum ada acara untuk dihitung.")
+            st.info("Tidak ada acara dalam rentang waktu tersebut.")
         else:
             for user in semua_user:
-                hadir = sum(user in absen.get(f"{a['judul']} - {a['waktu']}", []) for a in acara)
+                hadir = sum(user in absen.get(f"{a['judul']} - {a['waktu']}", []) for a in acara_terfilter)
                 persen = (hadir / total_acara) * 100
                 st.write(f"👤 {user}: {hadir}/{total_acara} hadir ({persen:.1f}%)")
 
