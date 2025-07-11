@@ -31,6 +31,10 @@ if "login" not in st.session_state:
     st.session_state.login = False
     st.session_state.username = ""
 
+if st.session_state.get("rerun", False):
+    st.session_state.rerun = False
+    st.experimental_rerun()
+
 # === Akun Admin Default ===
 users = load_json(USER_FILE, {})
 if "admin" not in users:
@@ -196,12 +200,14 @@ if menu == "Manajemen Anggota":
                         acara[i] = {"judul": new_judul, "waktu": new_waktu, "kode": new_kode}
                         save_json(ACARA_FILE, acara)
                         st.success("Acara diperbarui.")
-                        st.experimental_rerun()
+                        st.session_state.rerun = True
+                        st.stop()
                 if st.button(f"🗑️ Hapus {key}"):
                     acara.pop(i)
                     save_json(ACARA_FILE, acara)
                     st.success("Acara dihapus.")
-                    st.experimental_rerun()
+                    st.session_state.rerun = True
+                    st.stop()
 
     else:
         st.header("📍 Absensi Kehadiran")
