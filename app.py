@@ -94,7 +94,6 @@ if st.session_state.username == "admin":
 
 # === Menu Utama ===
 menu = st.sidebar.selectbox("Menu", ["Manajemen Lomba", "Manajemen Anggota"])
-st.title("Aplikasi Karang Taruna Bina Bhakti")
 
 # === MANFA LOMBA ===
 if menu == "Manajemen Lomba":
