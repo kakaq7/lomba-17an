@@ -174,25 +174,40 @@ if menu == "Manajemen Anggota":
             except:
                 st.error("Format waktu salah.")
 
-    st.header("📍 Absensi Kehadiran")
-    hari_ini = datetime.now(wib).strftime("%d-%m-%Y")
-    aktif = [a for a in acara if a["waktu"].startswith(hari_ini)]
-    if not aktif:
-        st.info("Tidak ada acara hari ini.")
-    else:
-        pilihan = st.selectbox("Pilih Acara", [f'{a["judul"]} - {a["waktu"]}' for a in aktif])
-        dipilih = next((a for a in aktif if f'{a["judul"]} - {a["waktu"]}' == pilihan), None)
-        st.text_input("Nama", value=st.session_state.username, disabled=True)
-        kode_input = st.text_input("Masukkan Kode Absensi")
-        if st.button("Absen Sekarang"):
-            if kode_input != dipilih["kode"]:
-                st.error("Kode salah.")
-            else:
-                if pilihan not in absen:
-                    absen[pilihan] = []
-                if st.session_state.username in absen[pilihan]:
-                    st.warning("Sudah absen.")
+        st.header("📊 Daftar Absensi Seluruh Acara")
+        if not acara:
+            st.info("Belum ada acara.")
+        else:
+            for ac in acara:
+                key = f"{ac['judul']} - {ac['waktu']}"
+                daftar = absen.get(key, [])
+                st.subheader(key)
+                if daftar:
+                    for nama in daftar:
+                        st.write(f"✅ {nama}")
                 else:
-                    absen[pilihan].append(st.session_state.username)
-                    save_json(ABSEN_FILE, absen)
-                    st.success("Absensi berhasil.")
+                    st.write("❌ Belum ada yang absen")
+
+    else:
+        st.header("📍 Absensi Kehadiran")
+        hari_ini = datetime.now(wib).strftime("%d-%m-%Y")
+        aktif = [a for a in acara if a["waktu"].startswith(hari_ini)]
+        if not aktif:
+            st.info("Tidak ada acara hari ini.")
+        else:
+            pilihan = st.selectbox("Pilih Acara", [f'{a["judul"]} - {a["waktu"]}' for a in aktif])
+            dipilih = next((a for a in aktif if f'{a["judul"]} - {a["waktu"]}' == pilihan), None)
+            st.text_input("Nama", value=st.session_state.username, disabled=True)
+            kode_input = st.text_input("Masukkan Kode Absensi")
+            if st.button("Absen Sekarang"):
+                if kode_input != dipilih["kode"]:
+                    st.error("Kode salah.")
+                else:
+                    if pilihan not in absen:
+                        absen[pilihan] = []
+                    if st.session_state.username in absen[pilihan]:
+                        st.warning("Sudah absen.")
+                    else:
+                        absen[pilihan].append(st.session_state.username)
+                        save_json(ABSEN_FILE, absen)
+                        st.success("Absensi berhasil.")
