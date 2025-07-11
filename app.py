@@ -52,7 +52,7 @@ if not st.session_state.login:
             if user in users and users[user] == pw:
                 st.session_state.login = True
                 st.session_state.username = user
-                st.success("Login berhasil. Silakan klik tombol Muat Ulang di browser Anda.")
+                st.success("Login berhasil. Silakan refresh halaman.")
                 st.stop()
             else:
                 st.error("Username atau password salah.")
@@ -154,7 +154,7 @@ if menu == "Manajemen Lomba":
             with open("juara.pdf", "rb") as f:
                 st.download_button("📥 Unduh PDF", f, file_name="juara.pdf")
 
-# === Manajemen Anggota / Absensi ===
+# === Manajemen Anggota ===
 if menu == "Manajemen Anggota":
     acara = load_json(ACARA_FILE, [])
     absen = load_json(ABSEN_FILE, {})
@@ -175,35 +175,44 @@ if menu == "Manajemen Anggota":
                 st.error("Format waktu salah.")
 
         st.header("📊 Daftar & Kelola Acara")
-        if not acara:
-            st.info("Belum ada acara.")
-        else:
-            for i, ac in enumerate(acara):
-                key = f"{ac['judul']} - {ac['waktu']}"
-                daftar = absen.get(key, [])
-                st.subheader(key)
-                if daftar:
-                    for nama in daftar:
-                        st.write(f"✅ {nama}")
-                else:
-                    st.write("❌ Belum ada yang absen")
+        for i, ac in enumerate(acara):
+            key = f"{ac['judul']} - {ac['waktu']}"
+            daftar = absen.get(key, [])
+            st.subheader(key)
+            if daftar:
+                for nama in daftar:
+                    st.write(f"✅ {nama}")
+            else:
+                st.write("❌ Belum ada yang absen")
 
-                if st.button(f"✏️ Edit {key}"):
-                    new_judul = st.text_input("Edit Nama Acara", value=ac["judul"], key=f"edit_judul_{i}")
-                    new_waktu = st.text_input("Edit Tanggal & Jam (dd-mm-yyyy hh:mm)", value=ac["waktu"], key=f"edit_waktu_{i}")
-                    new_kode = st.text_input("Edit Kode Absensi", value=ac["kode"], key=f"edit_kode_{i}")
-                    if st.button(f"Simpan Perubahan {key}"):
-                        acara[i] = {"judul": new_judul, "waktu": new_waktu, "kode": new_kode}
-                        save_json(ACARA_FILE, acara)
-                        st.success("Acara diperbarui.")
-                        st.session_state.rerun = True
-                        st.stop()
-                if st.button(f"🗑️ Hapus {key}"):
-                    acara.pop(i)
+            if st.button(f"✏️ Edit {key}"):
+                new_judul = st.text_input("Edit Nama Acara", value=ac["judul"], key=f"edit_judul_{i}")
+                new_waktu = st.text_input("Edit Tanggal & Jam (dd-mm-yyyy hh:mm)", value=ac["waktu"], key=f"edit_waktu_{i}")
+                new_kode = st.text_input("Edit Kode Absensi", value=ac["kode"], key=f"edit_kode_{i}")
+                if st.button(f"Simpan Perubahan {key}"):
+                    acara[i] = {"judul": new_judul, "waktu": new_waktu, "kode": new_kode}
                     save_json(ACARA_FILE, acara)
-                    st.success("Acara dihapus.")
+                    st.success("Acara diperbarui.")
                     st.session_state.rerun = True
                     st.stop()
+
+            if st.button(f"🗑️ Hapus {key}"):
+                acara.pop(i)
+                save_json(ACARA_FILE, acara)
+                st.success("Acara dihapus.")
+                st.session_state.rerun = True
+                st.stop()
+
+        st.header("📈 Persentase Kehadiran Anggota")
+        semua_user = [u for u in users if u != "admin"]
+        total_acara = len(acara)
+        if total_acara == 0:
+            st.info("Belum ada acara untuk dihitung.")
+        else:
+            for user in semua_user:
+                hadir = sum(user in absen.get(f\"{a['judul']} - {a['waktu']}\", []) for a in acara)
+                persen = (hadir / total_acara) * 100
+                st.write(f"👤 {user}: {hadir}/{total_acara} hadir ({persen:.1f}%)")
 
     else:
         st.header("📍 Absensi Kehadiran")
