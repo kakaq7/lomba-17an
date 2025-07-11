@@ -99,7 +99,7 @@ if st.session_state.username == "admin":
 menu = st.sidebar.selectbox("Menu", ["Manajemen Lomba", "Manajemen Anggota"])
 st.title("Aplikasi Karang Taruna Bina Bhakti")
 
-# === MANFA LOMBA ===
+# === Manajemen Lomba ===
 if menu == "Manajemen Lomba":
     data = load_json(DATA_FILE, {})
     st.header("📋 Tambah Lomba")
@@ -157,3 +157,78 @@ if menu == "Manajemen Lomba":
             pdf.output("juara.pdf")
             with open("juara.pdf", "rb") as f:
                 st.download_button("📥 Unduh PDF", f, file_name="juara.pdf")
+
+# === Manajemen Anggota / Absensi ===
+if menu == "Manajemen Anggota":
+    acara = load_json(ACARA_FILE, [])
+    absen = load_json(ABSEN_FILE, {})
+
+    if st.session_state.username == "admin":
+        st.header("📅 Buat Acara")
+        judul = st.text_input("Nama Acara")
+        waktu_str = st.text_input("Tanggal & Jam (dd-mm-yyyy hh:mm)")
+        kode = st.text_input("Kode Absensi")
+        if st.button("Simpan Acara"):
+            try:
+                waktu = datetime.strptime(waktu_str, "%d-%m-%Y %H:%M")
+                waktu_str_wib = waktu.strftime("%d-%m-%Y %H:%M")
+                acara.append({"judul": judul, "waktu": waktu_str_wib, "kode": kode})
+                save_json(ACARA_FILE, acara)
+                st.success("Acara berhasil dibuat.")
+            except:
+                st.error("Format waktu salah.")
+
+        st.header("📊 Daftar & Kelola Acara")
+        if not acara:
+            st.info("Belum ada acara.")
+        else:
+            for i, ac in enumerate(acara):
+                key = f"{ac['judul']} - {ac['waktu']}"
+                daftar = absen.get(key, [])
+                st.subheader(key)
+                if daftar:
+                    for nama in daftar:
+                        st.write(f"✅ {nama}")
+                else:
+                    st.write("❌ Belum ada yang absen")
+
+                if st.button(f"✏️ Edit {key}"):
+                    new_judul = st.text_input("Edit Nama Acara", value=ac["judul"], key=f"edit_judul_{i}")
+                    new_waktu = st.text_input("Edit Tanggal & Jam (dd-mm-yyyy hh:mm)", value=ac["waktu"], key=f"edit_waktu_{i}")
+                    new_kode = st.text_input("Edit Kode Absensi", value=ac["kode"], key=f"edit_kode_{i}")
+                    if st.button(f"Simpan Perubahan {key}"):
+                        acara[i] = {"judul": new_judul, "waktu": new_waktu, "kode": new_kode}
+                        save_json(ACARA_FILE, acara)
+                        st.success("Acara diperbarui.")
+                        st.session_state.rerun = True
+                        st.stop()
+                if st.button(f"🗑️ Hapus {key}"):
+                    acara.pop(i)
+                    save_json(ACARA_FILE, acara)
+                    st.success("Acara dihapus.")
+                    st.session_state.rerun = True
+                    st.stop()
+
+    else:
+        st.header("📍 Absensi Kehadiran")
+        hari_ini = datetime.now(wib).strftime("%d-%m-%Y")
+        aktif = [a for a in acara if a["waktu"].startswith(hari_ini)]
+        if not aktif:
+            st.info("Tidak ada acara hari ini.")
+        else:
+            pilihan = st.selectbox("Pilih Acara", [f'{a["judul"]} - {a["waktu"]}' for a in aktif])
+            dipilih = next((a for a in aktif if f'{a["judul"]} - {a["waktu"]}' == pilihan), None)
+            st.text_input("Nama", value=st.session_state.username, disabled=True)
+            kode_input = st.text_input("Masukkan Kode Absensi")
+            if st.button("Absen Sekarang"):
+                if kode_input != dipilih["kode"]:
+                    st.error("Kode salah.")
+                else:
+                    if pilihan not in absen:
+                        absen[pilihan] = []
+                    if st.session_state.username in absen[pilihan]:
+                        st.warning("Sudah absen.")
+                    else:
+                        absen[pilihan].append(st.session_state.username)
+                        save_json(ABSEN_FILE, absen)
+                        st.success("Absensi berhasil.")
