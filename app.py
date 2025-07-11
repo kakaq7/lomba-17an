@@ -31,6 +31,10 @@ if "login" not in st.session_state:
     st.session_state.login = False
     st.session_state.username = ""
 
+if st.session_state.get("rerun", False):
+    st.session_state.rerun = False
+    st.stop()
+
 # === Admin Akun Default ===
 users = load_json(USER_FILE, {})
 if "admin" not in users:
@@ -48,7 +52,8 @@ if not st.session_state.login:
             if user in users and users[user] == pw:
                 st.session_state.login = True
                 st.session_state.username = user
-                st.experimental_rerun()
+                st.session_state.rerun = True
+                st.stop()
             else:
                 st.error("Username atau password salah.")
     else:
@@ -72,7 +77,8 @@ if not st.session_state.login:
 st.sidebar.title(f"Hai, {st.session_state.username}")
 if st.sidebar.button("Logout"):
     st.session_state.clear()
-    st.experimental_rerun()
+    st.session_state.rerun = True
+    st.stop()
 
 # === Kode Undangan Admin ===
 if st.session_state.username == "admin":
@@ -165,7 +171,8 @@ elif menu == "Manajemen Anggota":
                 })
                 save_json(ACARA_FILE, acara)
                 st.success("Acara dibuat.")
-                st.experimental_rerun()
+                st.session_state.rerun = True
+                st.stop()
             except:
                 st.error("Format waktu salah.")
 
@@ -186,13 +193,15 @@ elif menu == "Manajemen Anggota":
                     acara[i] = {"judul": new_judul, "waktu": new_waktu, "kode": new_kode}
                     save_json(ACARA_FILE, acara)
                     st.success("Acara diperbarui.")
-                    st.experimental_rerun()
+                    st.session_state.rerun = True
+                    st.stop()
 
             if st.button(f"🗑️ Hapus {key}"):
                 acara.pop(i)
                 save_json(ACARA_FILE, acara)
                 st.success("Acara dihapus.")
-                st.experimental_rerun()
+                st.session_state.rerun = True
+                st.stop()
 
         st.header("Persentase Kehadiran")
         semua_user = [u for u in users if u != "admin"]
