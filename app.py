@@ -210,7 +210,7 @@ if menu == "Manajemen Anggota":
             st.info("Belum ada acara untuk dihitung.")
         else:
             for user in semua_user:
-                hadir = sum(user in absen.get(f\"{a['judul']} - {a['waktu']}\", []) for a in acara)
+                hadir = sum(user in absen.get(f"{a['judul']} - {a['waktu']}", []) for a in acara)
                 persen = (hadir / total_acara) * 100
                 st.write(f"👤 {user}: {hadir}/{total_acara} hadir ({persen:.1f}%)")
 
