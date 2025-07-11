@@ -61,11 +61,11 @@ if not st.session_state.login:
         user = st.text_input("Username Baru")
         pw = st.text_input("Password Baru", type="password")
         kode = st.text_input("Kode Undangan")
-        invite = load_json(INVITE_FILE, {"aktif": []})
+        invite = load_json(INVITE_FILE, {"aktif": ""})
         if st.button("Daftar"):
             if user in users:
                 st.error("Username sudah ada.")
-            elif kode not in invite["aktif"]:
+            elif kode != invite["aktif"]:
                 st.error("Kode undangan tidak valid.")
             else:
                 users[user] = pw
@@ -87,13 +87,9 @@ if st.session_state.username == "admin":
     st.sidebar.title("Admin Panel")
     kode_baru = st.sidebar.text_input("Buat Kode Undangan Baru")
     if st.sidebar.button("Tambah Kode"):
-        invites = load_json(INVITE_FILE, {"aktif": []})
-        if kode_baru not in invites["aktif"]:
-            invites["aktif"].append(kode_baru)
-            save_json(INVITE_FILE, invites)
-            st.sidebar.success("Kode ditambahkan")
-        else:
-            st.sidebar.warning("Kode sudah ada")
+        invites = {"aktif": kode_baru}
+        save_json(INVITE_FILE, invites)
+        st.sidebar.success("Kode undangan diperbarui")
 
 # === Menu Utama ===
 menu = st.sidebar.selectbox("Menu", ["Manajemen Lomba", "Manajemen Anggota"])
