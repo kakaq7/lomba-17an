@@ -38,11 +38,11 @@ if "admin" not in users:
     save_json(USER_FILE, users)
 
 # === Login/Register ===
-st.title("Aplikasi Karang Taruna Bina Bhakti")
+st.title("🇮🇩Aplikasi Karang Taruna Bina Bhakti")
 if not st.session_state.login:
     mode = st.selectbox("Pilih", ["Login", "Daftar Akun"])
     if mode == "Login":
-        st.title("Login Karang Taruna")
+        st.title("Login Anggota Karang Taruna")
         user = st.text_input("Username")
         pw = st.text_input("Password", type="password")
         if st.button("Login"):
