@@ -58,7 +58,7 @@ if not st.session_state.login:
         st.button("Login", on_click=proses_login)
         
         if st.session_state.login_error:
-        st.error("Username atau password salah.")
+             st.error("Username atau password salah.")
         
     elif mode == "Daftar Akun":
         st.title("Daftar Akun Baru")
