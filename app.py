@@ -228,22 +228,22 @@ elif menu == "Manajemen Anggota":
 
                        if st.button("Simpan Perubahan", key=f"simpan_{i}"):
                            try:
-                           new_judul = st.session_state[f"judul_{i}"]
-                           new_waktu = st.session_state[f"waktu_{i}"]
-                           new_kode = st.session_state[f"kode_{i}"]
+                               new_judul = st.session_state[f"judul_{i}"]
+                               new_waktu = st.session_state[f"waktu_{i}"]
+                               new_kode = st.session_state[f"kode_{i}"]
 
-                           datetime.strptime(new_waktu, "%d-%m-%Y %H:%M")  # validasi
+                               datetime.strptime(new_waktu, "%d-%m-%Y %H:%M")  # validasi
 
-                           acara[i]["judul"] = new_judul
-                           acara[i]["waktu"] = new_waktu
-                           acara[i]["kode"] = new_kode
+                               acara[i]["judul"] = new_judul
+                               acara[i]["waktu"] = new_waktu
+                               acara[i]["kode"] = new_kode
 
-                           save_json(ACARA_FILE, acara)
-                           st.success("Acara berhasil diperbarui.")
-                           del st.session_state["editing_index"]
-                           st.rerun()
+                               save_json(ACARA_FILE, acara)
+                               st.success("Acara berhasil diperbarui.")
+                               del st.session_state["editing_index"]
+                               st.rerun()
                            except:
-                           st.error("Format waktu salah. Gunakan dd-mm-yyyy hh:mm")
+                               st.error("Format waktu salah. Gunakan dd-mm-yyyy hh:mm")
 
 
         elif mode == "Kehadiran":
