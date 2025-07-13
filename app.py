@@ -203,7 +203,6 @@ elif menu == "Manajemen Anggota":
                     with col1:
                         if st.button("Edit", key=f"edit_{i}"):
                             st.session_state.editing_index = i
-                            st.session_state.pop("pesan_edit", None)
                     with col2:
                         # Di dalam loop acara:
                         if st.button("Hapus", key=f"hapus_{i}"):
