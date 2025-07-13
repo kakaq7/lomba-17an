@@ -36,7 +36,7 @@ if "login_error" not in st.session_state:
 # Admin Akun Default
 users = load_json(USER_FILE, {})
 if "admin" not in users:
-    users["admin"] = "admin123"
+    users["admin"] = "merdeka45"
     save_json(USER_FILE, users)
 
 def proses_login():
