@@ -53,7 +53,7 @@ st.title("🇮🇩Aplikasi Karang Taruna Bina Bhakti")
 if not st.session_state.login:
     mode = st.selectbox("Pilih", ["Login", "Daftar Akun"])
     if mode == "Login":
-        st.header("Login Karang Taruna")
+        st.header("Login Anggota Karang Taruna")
         st.text_input("Username", key="login_user")
         st.text_input("Password", type="password", key="login_pass")
         st.button("Login", on_click=proses_login)
