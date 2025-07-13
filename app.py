@@ -241,7 +241,6 @@ elif menu == "Manajemen Anggota":
                                 st.success("Acara berhasil diperbarui.")
                                 del st.session_state["editing_index"]
                                 st.rerun()
-
                              except:
                                 st.error("Format waktu salah. Gunakan dd-mm-yyyy hh:mm")
 
