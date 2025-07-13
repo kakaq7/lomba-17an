@@ -214,6 +214,7 @@ elif menu == "Manajemen Anggota":
                             acara.pop(hapus_index)
                             save_json(ACARA_FILE, acara)
                             st.session_state.hapus_index = None
+                            st.experimental_rerun()
 
                     # Form edit jika sedang diedit
                     if st.session_state.get("editing") == i:
