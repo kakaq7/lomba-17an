@@ -190,11 +190,42 @@ elif menu == "Manajemen Anggota":
                 waktu_acara = datetime.strptime(ac["waktu"], "%d-%m-%Y %H:%M")
                 if tgl_awal <= waktu_acara.date() <= tgl_akhir:
                     key = f"{ac['judul']} - {ac['waktu']}"
-                    daftar = absen.get(key, [])
-                    st.subheader(key)
-                    st.write(f"Jumlah hadir: {len(daftar)}")
-                    for nama in daftar:
-                        st.write(f"✅ {nama}")
+daftar = absen.get(key, [])
+st.subheader(key)
+st.write(f"Jumlah hadir: {len(daftar)}")
+for nama in daftar:
+    st.write(f"✅ {nama}")
+
+# Tambahkan tombol Edit dan Hapus
+col1, col2 = st.columns([1, 1])
+with col1:
+    if st.button("Edit", key=f"edit_{i}"):
+        st.session_state.editing = i  # Simpan indeks acara yang diedit
+with col2:
+    if st.button("Hapus", key=f"hapus_{i}"):
+        acara.pop(i)
+        save_json(ACARA_FILE, acara)
+        st.success("Acara dihapus.")
+
+# Jika tombol Edit ditekan
+if st.session_state.get("editing") == i:
+    st.markdown("**Edit Acara:**")
+    new_judul = st.text_input("Judul Baru", value=ac["judul"], key=f"judul_{i}")
+    new_waktu = st.text_input("Waktu Baru (dd-mm-yyyy hh:mm)", value=ac["waktu"], key=f"waktu_{i}")
+    new_kode = st.text_input("Kode Baru", value=ac["kode"], key=f"kode_{i}")
+    if st.button("Simpan Perubahan", key=f"simpan_{i}"):
+        try:
+            # Validasi waktu
+            datetime.strptime(new_waktu, "%d-%m-%Y %H:%M")
+            acara[i]["judul"] = new_judul
+            acara[i]["waktu"] = new_waktu
+            acara[i]["kode"] = new_kode
+            save_json(ACARA_FILE, acara)
+            st.success("Acara berhasil diperbarui.")
+            del st.session_state["editing"]
+        except:
+            st.error("Format waktu salah. Gunakan dd-mm-yyyy hh:mm")
+
 
         elif mode == "Kehadiran":
             st.header("Persentase Kehadiran")
