@@ -162,6 +162,7 @@ elif menu == "Manajemen Anggota":
 
     if st.session_state.username == "admin":
         mode = st.selectbox("Pilih", ["Buat Acara", "Daftar Acara", "Kehadiran"])
+        if mode == "Buat Acara":
         st.header("Buat Acara")
         judul = st.text_input("Judul Acara")
         waktu_str = st.text_input("Tanggal & Jam (dd-mm-yyyy hh:mm)")
@@ -176,11 +177,10 @@ elif menu == "Manajemen Anggota":
                 })
                 save_json(ACARA_FILE, acara)
                 st.success("Acara dibuat.")
-                st.session_state.rerun = True
-                st.stop()
             except:
                 st.error("Format waktu salah.")
-
+                
+        elif mode == "Daftar Acara":
         st.header("Filter Absensi Berdasarkan Tanggal")
         tgl_awal = st.date_input("Dari Tanggal")
         tgl_akhir = st.date_input("Sampai Tanggal")
