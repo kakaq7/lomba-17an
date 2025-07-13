@@ -239,7 +239,6 @@ elif menu == "Manajemen Anggota":
 
                                save_json(ACARA_FILE, acara)
                                st.success("Acara berhasil diperbarui.")
-                               st.rerun()
                                del st.session_state["editing_index"]
                                st.rerun()
                            except:
