@@ -5,38 +5,6 @@ from datetime import datetime
 from pytz import timezone
 from fpdf import FPDF
 
-st.markdown("""
-    <style>
-    html, body, [class*="css"]  {
-        font-size: 16px;
-    }
-
-    h1, h2, h3, h4 {
-        font-size: 28px !important;
-        font-weight: bold;
-    }
-
-    .title {
-        font-size: 100px !important;
-        font-weight: bold;
-        color: blue;
-    }
-
-    .stTextInput > div > input {
-        font-size: 16px;
-    }
-
-    .stSelectbox > div {
-        font-size: 16px;
-    }
-
-    .stButton > button {
-        font-size: 16px;
-    }
-    </style>
-""", unsafe_allow_html=True)
-
-
 # Zona Waktu Indonesia
 wib = timezone("Asia/Jakarta")
 
