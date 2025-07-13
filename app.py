@@ -97,7 +97,7 @@ if st.session_state.username == "admin":
         st.sidebar.success("Kode diperbarui")
 
 # Menu
-menu = st.sidebar.selectbox("Menu", ["Manajemen Lomba", "Manajemen Anggota"])
+menu = st.sidebar.selectbox("Menu", ["Manajemen Anggota", "Manajemen Lomba"])
 # Manajemen Lomba
 data = load_json(DATA_FILE, {})
 if menu == "Manajemen Lomba":
