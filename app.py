@@ -242,7 +242,8 @@ elif menu == "Manajemen Anggota":
                                 del st.session_state["editing_index"]
                             except:
                                 st.session_state["pesan_edit"] = "format_salah"
-                            st.session_state["harus_rerun"] = True
+                            # Jangan langsung rerun — beri flag
+                            st.session_state["selesai_edit"] = True
                                 
                         st.button("Simpan Perubahan", key=f"simpan_{i}", on_click=simpan_perubahan)
 
@@ -255,8 +256,9 @@ elif menu == "Manajemen Anggota":
                             del st.session_state["pesan_edit"]
 
                         # Rerun setelah penyimpanan
-                        if st.session_state.get("harus_rerun"):
-                            del st.session_state["harus_rerun"]
+                        if st.session_state.get("selesai_edit"):
+                            st.session_state.pop("editing_index", None)
+                            st.session_state.pop("selesai_edit", None)
                             st.rerun()
 
 
