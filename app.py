@@ -49,6 +49,7 @@ def proses_login():
         st.session_state.login_error = True
 
 # Login/Register
+st.title("🇮🇩Aplikasi Karang Taruna Bina Bhakti")
 if not st.session_state.login:
     mode = st.selectbox("Pilih", ["Login", "Daftar Akun"])
     if mode == "Login":
@@ -97,8 +98,6 @@ if st.session_state.username == "admin":
 
 # Menu
 menu = st.sidebar.selectbox("Menu", ["Manajemen Lomba", "Manajemen Anggota"])
-st.title("Aplikasi Karang Taruna Bina Bhakti")
-
 # Manajemen Lomba
 data = load_json(DATA_FILE, {})
 if menu == "Manajemen Lomba":
