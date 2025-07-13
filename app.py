@@ -239,7 +239,6 @@ elif menu == "Manajemen Anggota":
 
                                 save_json(ACARA_FILE, acara)
                                 st.session_state["pesan_edit"] = "sukses"
-                                del st.session_state["editing_index"]
                             except:
                                 st.session_state["pesan_edit"] = "format_salah"
                             # Jangan langsung rerun — beri flag
