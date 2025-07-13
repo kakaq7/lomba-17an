@@ -249,10 +249,10 @@ elif menu == "Manajemen Anggota":
 
                         # Tampilkan pesan hasil edit (jika ada)
                         if st.session_state.get("pesan_edit") == "sukses":
-                            st.success("✅ Acara berhasil diperbarui.")
+                            st.toast("✅ Acara berhasil diperbarui.")
                             del st.session_state["pesan_edit"]
                         elif st.session_state.get("pesan_edit") == "format_salah":
-                            st.error("⚠️ Format waktu salah. Gunakan format dd-mm-yyyy hh:mm.")
+                            st.toast("⚠️ Format waktu salah. Gunakan format dd-mm-yyyy hh:mm.")
                             del st.session_state["pesan_edit"]
 
 
