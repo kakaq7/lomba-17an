@@ -208,7 +208,6 @@ elif menu == "Manajemen Anggota":
                             acara.pop(i)
                             save_json(ACARA_FILE, acara)
                             st.success("Acara dihapus.")
-                            st.experimental_rerun()
 
                     # Form edit jika sedang diedit
                     if st.session_state.get("editing") == i:
@@ -226,7 +225,6 @@ elif menu == "Manajemen Anggota":
                                 save_json(ACARA_FILE, acara)
                                 st.success("Acara berhasil diperbarui.")
                                 del st.session_state["editing"]
-                                st.experimental_rerun()
                             except:
                                 st.error("Format waktu salah. Gunakan dd-mm-yyyy hh:mm")
 
