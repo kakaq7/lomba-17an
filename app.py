@@ -59,6 +59,7 @@ if not st.session_state.login:
         
         if st.session_state.login_error:
         st.error("Username atau password salah.")
+        
     elif mode == "Daftar Akun":
         st.title("Daftar Akun Baru")
         user = st.text_input("Username Baru")
