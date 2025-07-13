@@ -161,8 +161,9 @@ elif menu == "Manajemen Anggota":
     absen = load_json(ABSEN_FILE, {})
 
     if st.session_state.username == "admin":
-        mode = st.selectbox("Pilih", ["Buat Acara", "Daftar Acara", "Kehadiran"])
-       if mode == "Buat Acara":
+    mode = st.selectbox("Pilih", ["Buat Acara", "Daftar Acara", "Kehadiran"])
+
+    if mode == "Buat Acara":
         st.header("Buat Acara")
         judul = st.text_input("Judul Acara")
         waktu_str = st.text_input("Tanggal & Jam (dd-mm-yyyy hh:mm)")
@@ -179,8 +180,8 @@ elif menu == "Manajemen Anggota":
                 st.success("Acara dibuat.")
             except:
                 st.error("Format waktu salah.")
-                
-       elif mode == "Daftar Acara":
+
+    elif mode == "Daftar Acara":
         st.header("Filter Absensi Berdasarkan Tanggal")
         tgl_awal = st.date_input("Dari Tanggal")
         tgl_akhir = st.date_input("Sampai Tanggal")
@@ -194,6 +195,7 @@ elif menu == "Manajemen Anggota":
                 for nama in daftar:
                     st.write(f"✅ {nama}")
 
+    elif mode == "Kehadiran":
         st.header("Persentase Kehadiran")
         semua_user = [u for u in users if u != "admin"]
         total_acara = len(acara)
@@ -201,6 +203,7 @@ elif menu == "Manajemen Anggota":
             hadir = sum(user in absen.get(f"{a['judul']} - {a['waktu']}", []) for a in acara)
             persen = (hadir / total_acara) * 100 if total_acara else 0
             st.write(f"{user}: {hadir}/{total_acara} hadir ({persen:.1f}%)")
+
 
     else:
         st.header("Absen Kehadiran Hari Ini")
