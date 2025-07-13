@@ -238,11 +238,10 @@ elif menu == "Manajemen Anggota":
                                 acara[i]["kode"] = new_kode
 
                                 save_json(ACARA_FILE, acara)
-                                st.session_state["pesan_edit"] = "sukses"
-                                st.session_state["selesai_edit"] = True
+                                st.session_state["edit_sukses"] = True
+                                st.session_state["editing_index"] = None
                             except:
-                                st.session_state["pesan_edit"] = "format_salah"
-                                st.session_state["selesai_edit"] = False
+                                st.session_state["edit_error"] = True
                                 
                         st.button("Simpan Perubahan", key=f"simpan_{i}", on_click=simpan_perubahan)
                         # ❗ Tampilkan error bawah form jika format salah
@@ -253,10 +252,8 @@ elif menu == "Manajemen Anggota":
                             st.error("❌ Format waktu salah. Gunakan format: dd-mm-yyyy hh:mm.")
 
                         # Rerun setelah penyimpanan
-                        if st.session_state.get("selesai_edit"):
-                            st.session_state.pop("editing_index", None)
-                            st.session_state.pop("selesai_edit", None)
-                            st.rerun()
+                        if st.session_state.get("edit_sukses") or st.session_state.get("edit_error"):
+                        st.rerun()
 
 
         elif mode == "Kehadiran":
