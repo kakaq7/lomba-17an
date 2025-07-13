@@ -225,7 +225,7 @@ elif menu == "Manajemen Anggota":
                         st.text_input("Waktu Baru (dd-mm-yyyy hh:mm)", key=f"waktu_{i}")
                         st.text_input("Kode Baru", key=f"kode_{i}")
 
-                        if st.button("Simpan Perubahan", key=f"simpan_{i}"):
+                        def simpan_perubahan():
                             try:
                                 new_judul = st.session_state[f"judul_{i}"]
                                 new_waktu = st.session_state[f"waktu_{i}"]
@@ -243,6 +243,7 @@ elif menu == "Manajemen Anggota":
                                 st.rerun()
                             except:
                                 st.error("Format waktu salah. Gunakan dd-mm-yyyy hh:mm")
+                        st.button("Simpan Perubahan", key=f"simpan_{i}", on_click=simpan_perubahan)
 
         elif mode == "Kehadiran":
             st.header("Persentase Kehadiran")
