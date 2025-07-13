@@ -19,7 +19,7 @@ st.markdown("""
     .title {
         font-size: 100px !important;
         font-weight: bold;
-        color: #333;
+        color: blue;
     }
 
     .stTextInput > div > input {
