@@ -77,12 +77,14 @@ if not st.session_state.login:
                 st.success("Akun berhasil dibuat. Silakan login.")
     st.stop()
 
+def proses_logout():
+    st.session_state.login = False
+    st.session_state.username = ""
+    st.session_state.login_error = False
+
 # Sidebar: Logout + Admin Panel
 st.sidebar.title(f"Hai, {st.session_state.username}")
-if st.sidebar.button("Logout"):
-    st.session_state.clear()
-    st.session_state.rerun = True
-    st.stop()
+if st.sidebar.button("Logout", on_click=proses_login)
 
 # Admin: Update Kode Undangan
 if st.session_state.username == "admin":
