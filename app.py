@@ -161,6 +161,7 @@ elif menu == "Manajemen Anggota":
     absen = load_json(ABSEN_FILE, {})
 
     if st.session_state.username == "admin":
+        mode = st.selectbox("Pilih", ["Buat Acara", "Daftar Acara", "Kehadiran"])
         st.header("Buat Acara")
         judul = st.text_input("Judul Acara")
         waktu_str = st.text_input("Tanggal & Jam (dd-mm-yyyy hh:mm)")
