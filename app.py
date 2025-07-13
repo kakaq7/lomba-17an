@@ -30,10 +30,8 @@ def save_json(file, data):
 if "login" not in st.session_state:
     st.session_state.login = False
     st.session_state.username = ""
-
-if st.session_state.get("rerun", False):
-    st.session_state.rerun = False
-    st.stop()
+if "login_error" not in st.session_state:
+    st.session_state.login_error = False
 
 # Admin Akun Default
 users = load_json(USER_FILE, {})
@@ -41,20 +39,25 @@ if "admin" not in users:
     users["admin"] = "admin123"
     save_json(USER_FILE, users)
 
+def proses_login():
+    user = st.session_state["login_user"]
+    pw = st.session_state["login_pass"]
+    if user in users and users[user] == pw:
+        st.session_state.login = True
+        st.session_state.username = user
+    else:
+        st.session_state.login_error = True
+
 # Login/Register
-def handle_login():
 if not st.session_state.login:
     mode = st.selectbox("Pilih", ["Login", "Daftar Akun"])
     if mode == "Login":
         st.title("Login Karang Taruna")
-        user = st.text_input("Username")
-        pw = st.text_input("Password", type="password")
-        if st.button("Login", on_click=handle_login):
-            if user in users and users[user] == pw:
-                st.session_state.login = True
-                st.session_state.username = user
-            else:
-                st.error("Username atau password salah.")
+        st.text_input("Username", key="login_user")
+        st.text_input("Password", type="password", key="login_pass")
+        st.button("Login", on_click=proses_login)
+    if st.session_state.login_error:
+        st.error("Username atau password salah.")
     else:
         st.title("Daftar Akun Baru")
         user = st.text_input("Username Baru")
