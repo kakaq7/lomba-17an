@@ -42,13 +42,14 @@ if "admin" not in users:
     save_json(USER_FILE, users)
 
 # Login/Register
+def handle_login():
 if not st.session_state.login:
     mode = st.selectbox("Pilih", ["Login", "Daftar Akun"])
     if mode == "Login":
         st.title("Login Karang Taruna")
         user = st.text_input("Username")
         pw = st.text_input("Password", type="password")
-        if st.button("Login"):
+        if st.button("Login", on_click=handle_login):
             if user in users and users[user] == pw:
                 st.session_state.login = True
                 st.session_state.username = user
