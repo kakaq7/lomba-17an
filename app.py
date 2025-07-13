@@ -204,7 +204,6 @@ elif menu == "Manajemen Anggota":
             persen = (hadir / total_acara) * 100 if total_acara else 0
             st.write(f"{user}: {hadir}/{total_acara} hadir ({persen:.1f}%)")
 
-
     else:
         st.header("Absen Kehadiran Hari Ini")
         hari_ini = datetime.now(wib).strftime("%d-%m-%Y")
