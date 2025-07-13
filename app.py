@@ -252,7 +252,7 @@ elif menu == "Manajemen Anggota":
                             st.toast("✅ Acara berhasil diperbarui.")
                             del st.session_state["pesan_edit"]
                         elif st.session_state.get("pesan_edit") == "format_salah":
-                            st.toast("⚠️ Format waktu salah. Gunakan format dd-mm-yyyy hh:mm.")
+                            st.error("⚠️ Format waktu salah. Gunakan format dd-mm-yyyy hh:mm.")
                             del st.session_state["pesan_edit"]
 
                         # Rerun setelah penyimpanan
