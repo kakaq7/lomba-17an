@@ -202,7 +202,7 @@ elif menu == "Manajemen Anggota":
                     col1, col2 = st.columns([1, 1])
                     with col1:
                         if st.button("Edit", key=f"edit_{i}"):
-                            st.session_state.editing = i
+                            st.session_state.editing_index = i
                     with col2:
                         # Di dalam loop acara:
                         if st.button("Hapus", key=f"hapus_{i}"):
@@ -218,7 +218,7 @@ elif menu == "Manajemen Anggota":
                             st.rerun()
 
                     # Form edit jika sedang diedit
-                    if st.session_state.get("editing") == i:
+                    if st.session_state.get("editing_index") == i:
                         st.markdown("**Edit Acara:**")
                         new_judul = st.text_input("Judul Baru", value=ac["judul"], key=f"judul_{i}")
                         new_waktu = st.text_input("Waktu Baru (dd-mm-yyyy hh:mm)", value=ac["waktu"], key=f"waktu_{i}")
@@ -232,7 +232,7 @@ elif menu == "Manajemen Anggota":
                                 acara[i]["kode"] = new_kode
                                 save_json(ACARA_FILE, acara)
                                 st.success("Acara berhasil diperbarui.")
-                                del st.session_state["editing"]
+                                del st.session_state["editing_index"]
                                 st.rerun()
                             except:
                                 st.error("Format waktu salah. Gunakan dd-mm-yyyy hh:mm")
