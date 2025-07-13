@@ -233,6 +233,7 @@ elif menu == "Manajemen Anggota":
                                 save_json(ACARA_FILE, acara)
                                 st.success("Acara berhasil diperbarui.")
                                 del st.session_state["editing"]
+                                st.rerun()
                             except:
                                 st.error("Format waktu salah. Gunakan dd-mm-yyyy hh:mm")
 
