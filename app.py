@@ -204,10 +204,16 @@ elif menu == "Manajemen Anggota":
                         if st.button("Edit", key=f"edit_{i}"):
                             st.session_state.editing = i
                     with col2:
+                        # Di dalam loop acara:
                         if st.button("Hapus", key=f"hapus_{i}"):
-                            acara.pop(i)
-                            save_json(ACARA_FILE, acara)
-                            st.success("Acara dihapus.")
+                        st.session_state.hapus_index = i
+
+                        # Cek dan proses hapus di luar tombol
+                        hapus_index = st.session_state.get("hapus_index", None)
+                        if hapus_index is not None:
+                        acara.pop(hapus_index)
+                        save_json(ACARA_FILE, acara)
+                        st.session_state.hapus_index = None
 
                     # Form edit jika sedang diedit
                     if st.session_state.get("editing") == i:
