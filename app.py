@@ -207,6 +207,7 @@ elif menu == "Manajemen Anggota":
                         # Di dalam loop acara:
                         if st.button("Hapus", key=f"hapus_{i}"):
                             st.session_state.hapus_index = i
+                            st.experimental_rerun()
 
                         # Cek dan proses hapus di luar tombol
                         hapus_index = st.session_state.get("hapus_index", None)
