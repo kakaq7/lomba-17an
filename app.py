@@ -52,8 +52,6 @@ if not st.session_state.login:
             if user in users and users[user] == pw:
                 st.session_state.login = True
                 st.session_state.username = user
-                st.session_state.rerun = True
-                st.stop()
             else:
                 st.error("Username atau password salah.")
     else:
