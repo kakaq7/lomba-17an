@@ -28,11 +28,11 @@ def save_json(file, data):
 
 # Session Init
 if "login" not in st.session_state:
-    st.session_state.login = True
+    st.session_state.login = False
     st.session_state.username = ""
 
 if st.session_state.get("rerun", False):
-    st.session_state.rerun = False
+    st.session_state.rerun = True
     st.stop()
 
 # Admin Akun Default
