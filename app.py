@@ -243,7 +243,6 @@ elif menu == "Manajemen Anggota":
                             except:
                                 st.session_state["pesan_edit"] = "format_salah"
                                 st.session_state["selesai_edit"] = False
-                                st.rerun()
                                 
                         st.button("Simpan Perubahan", key=f"simpan_{i}", on_click=simpan_perubahan)
                         # ❗ Tampilkan error bawah form jika format salah
