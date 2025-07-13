@@ -56,7 +56,7 @@ if not st.session_state.login:
         st.text_input("Username", key="login_user")
         st.text_input("Password", type="password", key="login_pass")
         st.button("Login", on_click=proses_login)
-    if st.session_state.login_error:
+        if st.session_state.login_error:
         st.error("Username atau password salah.")
     else:
         st.title("Daftar Akun Baru")
