@@ -84,7 +84,7 @@ def proses_logout():
 
 # Sidebar: Logout + Admin Panel
 st.sidebar.title(f"Hai, {st.session_state.username}")
-if st.sidebar.button("Logout", on_click=proses_login):
+st.sidebar.button("Logout", on_click=proses_login):
 
 # Admin: Update Kode Undangan
 if st.session_state.username == "admin":
