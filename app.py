@@ -161,60 +161,68 @@ elif menu == "Manajemen Anggota":
     absen = load_json(ABSEN_FILE, {})
 
     if st.session_state.username == "admin":
-    mode = st.selectbox("Pilih", ["Buat Acara", "Daftar Acara", "Kehadiran"])
+        mode = st.selectbox("Pilih", ["Buat Acara", "Daftar Acara", "Kehadiran"])
 
-    if mode == "Buat Acara":
-        st.header("Buat Acara")
-        judul = st.text_input("Judul Acara")
-        waktu_str = st.text_input("Tanggal & Jam (dd-mm-yyyy hh:mm)")
-        kode = st.text_input("Kode Absensi")
-        if st.button("Simpan Acara"):
-            try:
-                waktu = datetime.strptime(waktu_str, "%d-%m-%Y %H:%M")
-                acara.append({
-                    "judul": judul,
-                    "waktu": waktu.strftime("%d-%m-%Y %H:%M"),
-                    "kode": kode
-                })
-                save_json(ACARA_FILE, acara)
-                st.success("Acara dibuat.")
-            except:
-                st.error("Format waktu salah.")
+        if mode == "Buat Acara":
+            st.header("Buat Acara")
+            judul = st.text_input("Judul Acara")
+            waktu_str = st.text_input("Tanggal & Jam (dd-mm-yyyy hh:mm)")
+            kode = st.text_input("Kode Absensi")
 
-    elif mode == "Daftar Acara":
-        st.header("Filter Absensi Berdasarkan Tanggal")
-        tgl_awal = st.date_input("Dari Tanggal")
-        tgl_akhir = st.date_input("Sampai Tanggal")
-        for i, ac in enumerate(acara):
-            waktu_acara = datetime.strptime(ac["waktu"], "%d-%m-%Y %H:%M")
-            if tgl_awal <= waktu_acara.date() <= tgl_akhir:
-                key = f"{ac['judul']} - {ac['waktu']}"
-                daftar = absen.get(key, [])
-                st.subheader(key)
-                st.write(f"Jumlah hadir: {len(daftar)}")
-                for nama in daftar:
-                    st.write(f"✅ {nama}")
+            if st.button("Simpan Acara"):
+                try:
+                    waktu = datetime.strptime(waktu_str, "%d-%m-%Y %H:%M")
+                    acara.append({
+                        "judul": judul,
+                        "waktu": waktu.strftime("%d-%m-%Y %H:%M"),
+                        "kode": kode
+                    })
+                    save_json(ACARA_FILE, acara)
+                    st.success("Acara dibuat.")
+                except:
+                    st.error("Format waktu salah.")
 
-    elif mode == "Kehadiran":
-        st.header("Persentase Kehadiran")
-        semua_user = [u for u in users if u != "admin"]
-        total_acara = len(acara)
-        for user in semua_user:
-            hadir = sum(user in absen.get(f"{a['judul']} - {a['waktu']}", []) for a in acara)
-            persen = (hadir / total_acara) * 100 if total_acara else 0
-            st.write(f"{user}: {hadir}/{total_acara} hadir ({persen:.1f}%)")
+        elif mode == "Daftar Acara":
+            st.header("Filter Absensi Berdasarkan Tanggal")
+            tgl_awal = st.date_input("Dari Tanggal")
+            tgl_akhir = st.date_input("Sampai Tanggal")
+            for i, ac in enumerate(acara):
+                waktu_acara = datetime.strptime(ac["waktu"], "%d-%m-%Y %H:%M")
+                if tgl_awal <= waktu_acara.date() <= tgl_akhir:
+                    key = f"{ac['judul']} - {ac['waktu']}"
+                    daftar = absen.get(key, [])
+                    st.subheader(key)
+                    st.write(f"Jumlah hadir: {len(daftar)}")
+                    for nama in daftar:
+                        st.write(f"✅ {nama}")
+
+        elif mode == "Kehadiran":
+            st.header("Persentase Kehadiran")
+            semua_user = [u for u in users if u != "admin"]
+            total_acara = len(acara)
+            for user in semua_user:
+                hadir = sum(
+                    user in absen.get(f"{a['judul']} - {a['waktu']}", [])
+                    for a in acara
+                )
+                persen = (hadir / total_acara) * 100 if total_acara else 0
+                st.write(f"{user}: {hadir}/{total_acara} hadir ({persen:.1f}%)")
 
     else:
+        # Untuk user biasa (bukan admin): absen hari ini
         st.header("Absen Kehadiran Hari Ini")
         hari_ini = datetime.now(wib).strftime("%d-%m-%Y")
         aktif = [a for a in acara if a["waktu"].startswith(hari_ini)]
+
         if not aktif:
             st.info("Tidak ada acara hari ini.")
         else:
             pilihan = st.selectbox("Pilih Acara", [f"{a['judul']} - {a['waktu']}" for a in aktif])
             dipilih = next((a for a in aktif if f"{a['judul']} - {a['waktu']}" == pilihan), None)
+
             st.text_input("Nama", value=st.session_state.username, disabled=True)
             kode_input = st.text_input("Masukkan Kode Absensi")
+
             if st.button("Absen"):
                 if kode_input != dipilih["kode"]:
                     st.error("Kode salah.")
