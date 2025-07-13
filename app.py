@@ -246,15 +246,6 @@ elif menu == "Manajemen Anggota":
                                 st.rerun()
                                 
                         st.button("Simpan Perubahan", key=f"simpan_{i}", on_click=simpan_perubahan)
-
-                        # Tampilkan pesan hasil edit (jika ada)
-                        if st.session_state.get("pesan_edit") == "sukses":
-                            st.toast("✅ Acara berhasil diperbarui.")
-                            del st.session_state["pesan_edit"]
-                        elif st.session_state.get("pesan_edit") == "format_salah":
-                            st.error("⚠️ Format waktu salah. Gunakan format dd-mm-yyyy hh:mm.")
-                            del st.session_state["pesan_edit"]
-
                         # ❗ Tampilkan error bawah form jika format salah
                         if (
                             st.session_state.get("pesan_edit") == "format_salah"
