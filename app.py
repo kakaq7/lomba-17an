@@ -219,31 +219,31 @@ elif menu == "Manajemen Anggota":
 
                     # Form edit jika sedang diedit
                     if st.session_state.get("editing_index") == i:
-                       st.markdown("**Edit Acara:**")
+                        st.markdown("**Edit Acara:**")
 
-                       st.text_input("Judul Baru", value=ac["judul"], key=f"judul_{i}")
-                       st.text_input("Waktu Baru (dd-mm-yyyy hh:mm)", value=ac["waktu"], key=f"waktu_{i}")
-                       st.text_input("Kode Baru", value=ac["kode"], key=f"kode_{i}")
+                        st.text_input("Judul Baru", key=f"judul_{i}")
+                        st.text_input("Waktu Baru (dd-mm-yyyy hh:mm)", key=f"waktu_{i}")
+                        st.text_input("Kode Baru", key=f"kode_{i}")
 
-                       if st.button("Simpan Perubahan", key=f"simpan_{i}"):
-                           try:
-                               new_judul = st.session_state[f"judul_{i}"]
-                               new_waktu = st.session_state[f"waktu_{i}"]
-                               new_kode = st.session_state[f"kode_{i}"]
+                        if st.button("Simpan Perubahan", key=f"simpan_{i}"):
+                            try:
+                                new_judul = st.session_state[f"judul_{i}"]
+                                new_waktu = st.session_state[f"waktu_{i}"]
+                                new_kode = st.session_state[f"kode_{i}"]
 
-                               datetime.strptime(new_waktu, "%d-%m-%Y %H:%M")  # validasi
+                                datetime.strptime(new_waktu, "%d-%m-%Y %H:%M")  # validasi
 
-                               acara[i]["judul"] = new_judul
-                               acara[i]["waktu"] = new_waktu
-                               acara[i]["kode"] = new_kode
+                                acara[i]["judul"] = new_judul
+                                acara[i]["waktu"] = new_waktu
+                                acara[i]["kode"] = new_kode
 
-                               save_json(ACARA_FILE, acara)
-                               st.success("Acara berhasil diperbarui.")
-                               del st.session_state["editing_index"]
-                               st.rerun()
-                           except:
-                               st.error("Format waktu salah. Gunakan dd-mm-yyyy hh:mm")
+                                save_json(ACARA_FILE, acara)
+                                st.success("Acara berhasil diperbarui.")
+                                del st.session_state["editing_index"]
+                                st.rerun()
 
+                             except:
+                                st.error("Format waktu salah. Gunakan dd-mm-yyyy hh:mm")
 
         elif mode == "Kehadiran":
             st.header("Persentase Kehadiran")
