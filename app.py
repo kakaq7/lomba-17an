@@ -243,7 +243,7 @@ elif menu == "Manajemen Anggota":
                                 del st.session_state["editing_index"]
                             except:
                                 st.session_state["pesan_edit"] = "format_salah"
-                                st.rerun()
+                            st.session_state["harus_rerun"] = True
                                 
                         st.button("Simpan Perubahan", key=f"simpan_{i}", on_click=simpan_perubahan)
 
@@ -254,6 +254,11 @@ elif menu == "Manajemen Anggota":
                         elif st.session_state.get("pesan_edit") == "format_salah":
                             st.toast("⚠️ Format waktu salah. Gunakan format dd-mm-yyyy hh:mm.")
                             del st.session_state["pesan_edit"]
+
+                        # Rerun setelah penyimpanan
+                        if st.session_state.get("harus_rerun"):
+                            del st.session_state["harus_rerun"]
+                            st.rerun()
 
 
         elif mode == "Kehadiran":
