@@ -32,7 +32,7 @@ if "login" not in st.session_state:
     st.session_state.username = ""
 
 if st.session_state.get("rerun", False):
-    st.session_state.rerun = True
+    st.session_state.rerun = False
     st.stop()
 
 # Admin Akun Default
