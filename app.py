@@ -53,7 +53,7 @@ st.title("🇮🇩Aplikasi Karang Taruna Bina Bhakti")
 if not st.session_state.login:
     mode = st.selectbox("Pilih", ["Login", "Daftar Akun"])
     if mode == "Login":
-        st.title("Login Karang Taruna")
+        st.header("Login Karang Taruna")
         st.text_input("Username", key="login_user")
         st.text_input("Password", type="password", key="login_pass")
         st.button("Login", on_click=proses_login)
@@ -62,7 +62,7 @@ if not st.session_state.login:
              st.error("Username atau password salah.")
         
     elif mode == "Daftar Akun":
-        st.title("Daftar Akun Baru")
+        st.header("Daftar Akun Baru")
         user = st.text_input("Username Baru")
         pw = st.text_input("Password Baru", type="password")
         kode = st.text_input("Kode Undangan")
