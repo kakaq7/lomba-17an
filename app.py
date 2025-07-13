@@ -243,15 +243,16 @@ elif menu == "Manajemen Anggota":
                             except:
                                 st.session_state["pesan_edit"] = "format_salah"
                                 st.rerun()
-                                st.button("Simpan Perubahan", key=f"simpan_{i}", on_click=simpan_perubahan)
+                                
+                        st.button("Simpan Perubahan", key=f"simpan_{i}", on_click=simpan_perubahan)
 
-                                # Tampilkan pesan sukses atau error
-                                if st.session_state.get("pesan_edit") == "sukses":
-                                    st.success("✅ Acara berhasil diperbarui.")
-                                    del st.session_state["pesan_edit"]
-                                elif st.session_state.get("pesan_edit") == "format_salah":
-                                    st.error("⚠️ Format waktu salah. Gunakan format dd-mm-yyyy hh:mm.")
-                                    del st.session_state["pesan_edit"]
+                        # Tampilkan pesan hasil edit (jika ada)
+                        if st.session_state.get("pesan_edit") == "sukses":
+                            st.success("✅ Acara berhasil diperbarui.")
+                            del st.session_state["pesan_edit"]
+                        elif st.session_state.get("pesan_edit") == "format_salah":
+                            st.error("⚠️ Format waktu salah. Gunakan format dd-mm-yyyy hh:mm.")
+                            del st.session_state["pesan_edit"]
 
 
         elif mode == "Kehadiran":
