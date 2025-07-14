@@ -250,11 +250,9 @@ elif menu == "Manajemen Anggota":
                                 del st.session_state["editing_index"]
                                 if "edit_error" in st.session_state:
                                     del st.session_state["edit_error"]
-                                st.rerun()
                             except:
                                 # Simpan error untuk ditampilkan pada index ke-i
                                 st.session_state["edit_error"] = i
-                                st.rerun()
 
                         # Tombol simpan — tanpa rerun di dalam fungsi
                         st.button("💾 Simpan Perubahan", key=f"simpan_{i}", on_click=simpan_perubahan)
