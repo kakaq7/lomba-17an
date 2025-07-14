@@ -227,7 +227,7 @@ elif menu == "Manajemen Anggota":
 
                         # Tampilkan error jika sebelumnya gagal
                         if st.session_state.get("edit_error") == i:
-                        st.error("❌ Format waktu salah. Gunakan format: dd-mm-yyyy hh:mm.")
+                            st.error("❌ Format waktu salah. Gunakan format: dd-mm-yyyy hh:mm.")
 
                         # Fungsi simpan — jangan panggil st.rerun() di sini
                         def simpan_perubahan():
