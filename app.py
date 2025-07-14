@@ -225,6 +225,10 @@ elif menu == "Manajemen Anggota":
                         new_waktu = st.text_input("Waktu Baru (dd-mm-yyyy hh:mm)", value=ac["waktu"], key=f"waktu_{i}")
                         new_kode = st.text_input("Kode Baru", value=ac["kode"], key=f"kode_{i}")
 
+                        # Tampilkan error jika sebelumnya gagal
+                        if st.session_state.get("edit_error") == i:
+                        st.error("❌ Format waktu salah. Gunakan format: dd-mm-yyyy hh:mm.")
+
                         # Fungsi simpan — jangan panggil st.rerun() di sini
                         def simpan_perubahan():
                             try:
@@ -242,25 +246,18 @@ elif menu == "Manajemen Anggota":
                                 acara[i]["kode"] = new_kode
                                 save_json(ACARA_FILE, acara)
 
-                                # Tandai bahwa berhasil, hapus form edit
-                                st.session_state["edit_sukses"] = True
-                                st.session_state["editing_index"] = None
+                                # Hilangkan form edit
+                                del st.session_state["editing_index"]
+                                if "edit_error" in st.session_state:
+                                del st.session_state["edit_error"]
+                                st.rerun()
                             except:
-                                st.session_state["edit_error"] = True
+                                # Simpan error untuk ditampilkan pada index ke-i
+                                st.session_state["edit_error"] = i
+                                st.rerun()
 
                         # Tombol simpan — tanpa rerun di dalam fungsi
                         st.button("💾 Simpan Perubahan", key=f"simpan_{i}", on_click=simpan_perubahan)
-
-                    # Tampilkan toast dan jalankan rerun jika perlu
-                    if st.session_state.get("edit_sukses"):
-                        st.toast("✅ Acara berhasil diperbarui.")
-                        del st.session_state["edit_sukses"]
-                        st.rerun()
-
-                    if st.session_state.get("edit_error"):
-                        st.toast("❌ Format waktu salah. Gunakan format: dd-mm-yyyy hh:mm.")
-                        del st.session_state["edit_error"]
-                        st.rerun()
 
         elif mode == "Kehadiran":
             st.header("Persentase Kehadiran")
