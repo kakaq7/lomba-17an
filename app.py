@@ -251,16 +251,16 @@ elif menu == "Manajemen Anggota":
                         # Tombol simpan — tanpa rerun di dalam fungsi
                         st.button("💾 Simpan Perubahan", key=f"simpan_{i}", on_click=simpan_perubahan)
 
-                        # Tampilkan toast dan jalankan rerun jika perlu
-                        if st.session_state.get("edit_sukses"):
-                            st.toast("✅ Acara berhasil diperbarui.")
-                            del st.session_state["edit_sukses"]
-                            st.rerun()
+                    # Tampilkan toast dan jalankan rerun jika perlu
+                    if st.session_state.get("edit_sukses"):
+                        st.toast("✅ Acara berhasil diperbarui.")
+                        del st.session_state["edit_sukses"]
+                        st.rerun()
 
-                        if st.session_state.get("edit_error"):
-                            st.toast("❌ Format waktu salah. Gunakan format: dd-mm-yyyy hh:mm.")
-                            del st.session_state["edit_error"]
-                            st.rerun()
+                    if st.session_state.get("edit_error"):
+                        st.toast("❌ Format waktu salah. Gunakan format: dd-mm-yyyy hh:mm.")
+                        del st.session_state["edit_error"]
+                        st.rerun()
 
         elif mode == "Kehadiran":
             st.header("Persentase Kehadiran")
