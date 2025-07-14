@@ -249,7 +249,7 @@ elif menu == "Manajemen Anggota":
                                 # Hilangkan form edit
                                 del st.session_state["editing_index"]
                                 if "edit_error" in st.session_state:
-                                del st.session_state["edit_error"]
+                                    del st.session_state["edit_error"]
                                 st.rerun()
                             except:
                                 # Simpan error untuk ditampilkan pada index ke-i
