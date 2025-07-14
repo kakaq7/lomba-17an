@@ -246,16 +246,22 @@ elif menu == "Manajemen Anggota":
                                 acara[i]["kode"] = new_kode
                                 save_json(ACARA_FILE, acara)
 
-                                # Hilangkan form edit
-                                del st.session_state["editing_index"]
-                                if "edit_error" in st.session_state:
-                                    del st.session_state["edit_error"]
+                                st.session_state["edit_success"] = True
+                                st.session_state["edit_success_index"] = i
                             except:
-                                # Simpan error untuk ditampilkan pada index ke-i
                                 st.session_state["edit_error"] = i
 
                         # Tombol simpan — tanpa rerun di dalam fungsi
                         st.button("💾 Simpan Perubahan", key=f"simpan_{i}", on_click=simpan_perubahan)
+                    # Jalankan rerun di luar callback
+                    if st.session_state.get("edit_success"):
+                        # Bersihkan state lalu rerun
+                        del st.session_state["edit_success"]
+                        del st.session_state["editing_index"]
+                        if "edit_error" in st.session_state:
+                            del st.session_state["edit_error"]
+                        st.rerun()
+
 
         elif mode == "Kehadiran":
             st.header("Persentase Kehadiran")
