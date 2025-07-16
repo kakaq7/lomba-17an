@@ -52,7 +52,7 @@ def proses_login():
         st.session_state.login_error = "Username dan password tidak boleh kosong."
         return
     else:
-        st.session_state.login_error = True
+        st.session_state.login_error = "Username atau password salah."
 
 # Login/Register
 st.title("🇮🇩Aplikasi Karang Taruna Bina Bhakti")
@@ -66,7 +66,7 @@ if not st.session_state.login:
             st.button("Login", on_click=proses_login)
         
             if st.session_state.login_error:
-                st.error("Username atau password salah.")
+                st.error(st.session_state.login_error)
                 
             if st.button("Lupa Password?"):
                 st.session_state.lupa_password = True
