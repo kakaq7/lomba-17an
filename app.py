@@ -67,21 +67,21 @@ if not st.session_state.login:
             if st.button("Lupa Password?"):
                 st.session_state.lupa_password = True
         else:
-        st.header("Reset Password")
-        username = st.text_input("Username")
-        new_pw = st.text_input("Password Baru", type="password")
+            st.header("Reset Password")
+            username = st.text_input("Username")
+            new_pw = st.text_input("Password Baru", type="password")
 
-        if st.button("Reset Password"):
-            if username in users:
-                users[username] = new_pw
-                save_json(USER_FILE, users)
-                st.success("Password berhasil direset. Silakan login kembali.")
+            if st.button("Reset Password"):
+                if username in users:
+                    users[username] = new_pw
+                    save_json(USER_FILE, users)
+                    st.success("Password berhasil direset. Silakan login kembali.")
+                    st.session_state.lupa_password = False
+                else:
+                    st.error("Username tidak ditemukan.")
+
+            if st.button("Kembali ke Login"):
                 st.session_state.lupa_password = False
-            else:
-                st.error("Username tidak ditemukan.")
-
-        if st.button("Kembali ke Login"):
-            st.session_state.lupa_password = False
         
     elif mode == "Daftar Akun":
         st.header("Daftar Akun Baru")
