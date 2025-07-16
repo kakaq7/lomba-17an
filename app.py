@@ -45,8 +45,8 @@ if "admin" not in users:
 
 def proses_login():
     st.session_state.login_attempted = True
-    user = st.session_state.get("login_user","")
-    pw = st.session_state.get("login_pass","")
+    user = st.session_state.get("login_user","").strip()
+    pw = st.session_state.get("login_pass","").strip()
     if not user or not pw:
         st.session_state.login_error = "Username dan password tidak boleh kosong."
         return
