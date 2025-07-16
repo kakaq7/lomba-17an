@@ -34,8 +34,9 @@ if "login_error" not in st.session_state:
     st.session_state.login_error = ""
 if "lupa_password" not in st.session_state:
     st.session_state.lupa_password = False
-if "login_attempted" not in st.session_state:
-    st.session_state.login_attempted = False
+if "login_attempted" not in st.session_state or not st.session_state.login_attempted:
+    st.session_state.login_error = ""
+    st.session_state.login_attempted = False
 
 # Admin Akun Default
 users = load_json(USER_FILE, {})
