@@ -55,6 +55,7 @@ def proses_login():
         st.session_state.login = True
         st.session_state.username = user
         st.session_state.login_error = ""
+        st.session_state.login_attempted = False
     else:
         st.session_state.login_error = "Username atau password salah."
 
@@ -64,8 +65,6 @@ if not st.session_state.login:
     mode = st.selectbox("Pilih", ["Login", "Daftar Akun"])
     if mode == "Login":
         if not st.session_state.lupa_password:
-            if not st.session_state.get("login_user") and not st.session_state.get("login_pass"):
-                st.session_state.login_error = ""
             st.header("Login Anggota Karang Taruna")
             st.text_input("Username", key="login_user")
             st.text_input("Password", type="password", key="login_pass")
