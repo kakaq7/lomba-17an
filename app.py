@@ -42,8 +42,8 @@ if "admin" not in users:
     save_json(USER_FILE, users)
 
 def proses_login():
-    user = st.session_state["login_user",""]
-    pw = st.session_state["login_pass",""]
+    user = st.session_state.get["login_user",""]
+    pw = st.session_state.get["login_pass",""]
     if not user or not pw:
         st.session_state.login_error = "Username dan password tidak boleh kosong."
         return
