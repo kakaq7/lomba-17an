@@ -62,10 +62,10 @@ if not st.session_state.login:
             st.button("Login", on_click=proses_login)
         
             if st.session_state.login_error:
-                 st.error("Username atau password salah.")
+                st.error("Username atau password salah.")
                 
             if st.button("Lupa Password?"):
-            st.session_state.lupa_password = True
+                st.session_state.lupa_password = True
         else:
         st.header("Reset Password")
         username = st.text_input("Username")
