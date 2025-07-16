@@ -47,6 +47,9 @@ def proses_login():
     if user in users and users[user] == pw:
         st.session_state.login = True
         st.session_state.username = user
+    if not user or not pw:
+        st.session_state.login_error = "Username dan password tidak boleh kosong."
+        return
     else:
         st.session_state.login_error = True
 
@@ -60,9 +63,6 @@ if not st.session_state.login:
             st.text_input("Username", key="login_user")
             st.text_input("Password", type="password", key="login_pass")
             st.button("Login", on_click=proses_login)
-
-            if not st.session_state.login_user or not st.session_state.login_pass:
-                st.error("Username dan password tidak boleh kosong.")
         
             if st.session_state.login_error:
                 st.error("Username atau password salah.")
