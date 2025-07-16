@@ -42,16 +42,16 @@ if "admin" not in users:
     save_json(USER_FILE, users)
 
 def proses_login():
-    user = st.session_state["login_user"]
-    pw = st.session_state["login_pass"]
+    user = st.session_state["login_user",""]
+    pw = st.session_state["login_pass",""]
+    if not user or not pw:
+        st.session_state.login_error = "Username dan password tidak boleh kosong."
+        return
+
     if user in users and users[user] == pw:
         st.session_state.login = True
         st.session_state.username = user
         st.session_state.login_error = ""
-        return
-    if not user or not pw:
-        st.session_state.login_error = "Username dan password tidak boleh kosong."
-        return
     else:
         st.session_state.login_error = "Username atau password salah."
 
