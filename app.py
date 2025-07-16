@@ -29,10 +29,9 @@ def save_json(file, data):
 # Session Init
 if "login" not in st.session_state:
     st.session_state.login = False
-    st.session_state.login_error = ""
     st.session_state.username = ""
 if "login_error" not in st.session_state:
-    st.session_state.login_error = False
+    st.session_state.login_error = ""
 if "lupa_password" not in st.session_state:
     st.session_state.lupa_password = False
 
@@ -48,6 +47,7 @@ def proses_login():
     if user in users and users[user] == pw:
         st.session_state.login = True
         st.session_state.username = user
+        st.session_state.login_error = ""
         return
     if not user or not pw:
         st.session_state.login_error = "Username dan password tidak boleh kosong."
