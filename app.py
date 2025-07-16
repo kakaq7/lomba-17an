@@ -36,9 +36,14 @@ if "lupa_password" not in st.session_state:
     st.session_state.lupa_password = False
 if "login_attempted" not in st.session_state:
     st.session_state.login_attempted = False
-if not st.session_state.get("login_user") and not st.session_state.get("login_pass"):
+if "login_triggered" not in st.session_state:
+    st.session_state.login_triggered = False
+
+if not st.session_state.login_triggered:
     st.session_state.login_error = ""
     st.session_state.login_attempted = False
+else:
+    st.session_state.login_triggered = False
 
 # Admin Akun Default
 users = load_json(USER_FILE, {})
@@ -49,6 +54,7 @@ if "admin" not in users:
 def proses_login():
     user = st.session_state.get("login_user","").strip()
     pw = st.session_state.get("login_pass","").strip()
+    st.session_state.login_triggered = True
     st.session_state.login_attempted = True
     if not user or not pw:
         st.session_state.login_error = "Username dan password tidak boleh kosong."
