@@ -70,10 +70,6 @@ if not st.session_state.login:
             st.text_input("Password", type="password", key="login_pass")
             user_input = st.session_state.get("login_user", "")
             pass_input = st.session_state.get("login_pass", "")
-            if not user_input and not pass_input:
-                st.session_state.login_error = ""
-                st.session_state.login_attempted = False
-
             st.button("Login", on_click=proses_login)
         
             if st.session_state.login_attempted and st.session_state.login_error:
