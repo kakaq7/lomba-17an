@@ -60,6 +60,9 @@ if not st.session_state.login:
             st.text_input("Username", key="login_user")
             st.text_input("Password", type="password", key="login_pass")
             st.button("Login", on_click=proses_login)
+
+            if not st.session_state.login_user or not st.session_state.login_pass:
+                st.error("Username dan password tidak boleh kosong.")
         
             if st.session_state.login_error:
                 st.error("Username atau password salah.")
@@ -92,7 +95,9 @@ if not st.session_state.login:
         kode = st.text_input("Kode Undangan")
         invite = load_json(INVITE_FILE, {"aktif": ""})
         if st.button("Daftar"):
-            if user in users:
+            if not user or not pw or not kode:
+                st.error("Semua kolom harus diisi.")
+            elif user in users:
                 st.error("Username sudah ada.")
             elif kode != invite["aktif"]:
                 st.error("Kode undangan tidak valid.")
