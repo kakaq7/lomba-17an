@@ -34,6 +34,8 @@ if "login_error" not in st.session_state:
     st.session_state.login_error = ""
 if "lupa_password" not in st.session_state:
     st.session_state.lupa_password = False
+if "login_attempted" not in st.session_state:
+    st.session_state.login_attempted = False
 
 # Admin Akun Default
 users = load_json(USER_FILE, {})
@@ -42,6 +44,7 @@ if "admin" not in users:
     save_json(USER_FILE, users)
 
 def proses_login():
+    st.session_state.login_attempted = True
     user = st.session_state.get("login_user","")
     pw = st.session_state.get("login_pass","")
     if not user or not pw:
@@ -66,9 +69,15 @@ if not st.session_state.login:
             st.header("Login Anggota Karang Taruna")
             st.text_input("Username", key="login_user")
             st.text_input("Password", type="password", key="login_pass")
+            if (
+                not st.session_state.get("login_user") and
+                not st.session_state.get("login_pass") and
+                not st.session_state.login_attempted
+            ):
+                st.session_state.login_error = ""
             st.button("Login", on_click=proses_login)
         
-            if st.session_state.login_error:
+            if st.session_state.login_attempted and st.session_state.login_error:
                 st.error(st.session_state.login_error)
                 
             if st.button("Lupa Password?"):
