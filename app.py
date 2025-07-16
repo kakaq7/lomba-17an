@@ -29,6 +29,7 @@ def save_json(file, data):
 # Session Init
 if "login" not in st.session_state:
     st.session_state.login = False
+    st.session_state.login_error = ""
     st.session_state.username = ""
 if "login_error" not in st.session_state:
     st.session_state.login_error = False
