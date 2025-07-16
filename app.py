@@ -87,7 +87,7 @@ if not st.session_state.login:
         
     elif mode == "Daftar Akun":
         st.header("Daftar Akun Baru")
-        user = st.text_input("Username Baru")
+        user = st.text_input("Username Baru (Nama Lengkap)")
         pw = st.text_input("Password Baru", type="password")
         kode = st.text_input("Kode Undangan")
         invite = load_json(INVITE_FILE, {"aktif": ""})
