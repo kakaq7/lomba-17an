@@ -32,6 +32,8 @@ if "login" not in st.session_state:
     st.session_state.username = ""
 if "login_error" not in st.session_state:
     st.session_state.login_error = False
+if "lupa_password" not in st.session_state:
+    st.session_state.lupa_password = False
 
 # Admin Akun Default
 users = load_json(USER_FILE, {})
@@ -53,13 +55,33 @@ st.title("🇮🇩Aplikasi Karang Taruna Bina Bhakti")
 if not st.session_state.login:
     mode = st.selectbox("Pilih", ["Login", "Daftar Akun"])
     if mode == "Login":
-        st.header("Login Anggota Karang Taruna")
-        st.text_input("Username", key="login_user")
-        st.text_input("Password", type="password", key="login_pass")
-        st.button("Login", on_click=proses_login)
+        if not st.session_state.lupa_password:
+            st.header("Login Anggota Karang Taruna")
+            st.text_input("Username", key="login_user")
+            st.text_input("Password", type="password", key="login_pass")
+            st.button("Login", on_click=proses_login)
         
-        if st.session_state.login_error:
-             st.error("Username atau password salah.")
+            if st.session_state.login_error:
+                 st.error("Username atau password salah.")
+                
+            if st.button("Lupa Password?"):
+            st.session_state.lupa_password = True
+        else:
+        st.header("Reset Password")
+        username = st.text_input("Username")
+        new_pw = st.text_input("Password Baru", type="password")
+
+        if st.button("Reset Password"):
+            if username in users:
+                users[username] = new_pw
+                save_json(USER_FILE, users)
+                st.success("Password berhasil direset. Silakan login kembali.")
+                st.session_state.lupa_password = False
+            else:
+                st.error("Username tidak ditemukan.")
+
+        if st.button("Kembali ke Login"):
+            st.session_state.lupa_password = False
         
     elif mode == "Daftar Akun":
         st.header("Daftar Akun Baru")
