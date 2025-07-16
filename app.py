@@ -66,6 +66,7 @@ if not st.session_state.login:
                 
             if st.button("Lupa Password?"):
                 st.session_state.lupa_password = True
+                st.rerun()
         else:
             st.header("Reset Password")
             username = st.text_input("Username")
@@ -82,6 +83,7 @@ if not st.session_state.login:
 
             if st.button("Kembali ke Login"):
                 st.session_state.lupa_password = False
+                st.rerun()
         
     elif mode == "Daftar Akun":
         st.header("Daftar Akun Baru")
