@@ -1,6 +1,8 @@
 import streamlit as st
 import json
 import os
+import firebase_admin
+from firebase_admin import credentials, db
 from datetime import datetime
 from pytz import timezone
 from fpdf import FPDF
@@ -25,6 +27,13 @@ def load_json(file, default):
 def save_json(file, data):
     with open(file, "w") as f:
         json.dump(data, f, indent=2)
+
+# Inisialisasi Firebase
+if not firebase_admin._apps:
+    cred = credentials.Certificate(st.secrets["FIREBASE"])
+    firebase_admin.initialize_app(cred, {
+        "databaseURL": "https://lomba-17an-default-rtdb.firebaseio.com/"
+    })
 
 # Session Init
 if "login" not in st.session_state:
