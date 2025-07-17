@@ -276,11 +276,21 @@ elif menu == "Manajemen Anggota":
                                 # Validasi waktu
                                 datetime.strptime(new_waktu, "%d-%m-%Y %H:%M")
 
+                                # Simpan key lama sebelum perubahan
+                                old_key = f"{acara[i]['judul']} - {acara[i]['waktu']}"
+                                new_key = f"{new_judul} - {new_waktu}"
+
                                 # Simpan perubahan
                                 acara[i]["judul"] = new_judul
                                 acara[i]["waktu"] = new_waktu
                                 acara[i]["kode"] = new_kode
                                 db.reference("acara").set(acara)
+
+                                # Pindahkan data absen dari key lama ke key baru jika ada
+                                absen_data = db.reference("absen").get() or {}
+                                if old_key in absen_data:
+                                    absen_data[new_key] = absen_data.pop(old_key)
+                                    db.reference("absen").set(absen_data)
 
                                 st.session_state["edit_success"] = True
                                 st.session_state["edit_success_index"] = i
