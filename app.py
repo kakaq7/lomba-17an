@@ -20,10 +20,10 @@ INVITE_FILE = "invite_codes.json"
 
 # Inisialisasi Firebase
 if not firebase_admin._apps:
-    cred = credentials.Certificate(st.secrets["FIREBASE"])
-    firebase_admin.initialize_app(cred, {
-        "databaseURL": "https://lomba-17an-default-rtdb.firebaseio.com/"
-    })
+    cred = credentials.Certificate(st.secrets["FIREBASE"])
+    firebase_admin.initialize_app(cred, {
+        "databaseURL": "https://lomba-17an-default-rtdb.firebaseio.com/"
+    })
 
 # Menyimpan ke Firebase
 db.reference("users").set(users_dict)
@@ -57,26 +57,26 @@ users = users_ref.get() or {}
 
 # Tambahkan admin jika belum ada
 if "admin" not in users:
-    users["admin"] = {
-        "password": "merdeka45",
-        "nama": "Administrator"
-    }
-    users_ref.set(users)
+    users["admin"] = {
+        "password": "merdeka45",
+        "nama": "Administrator"
+    }
+    users_ref.set(users)
 
 # Konversi akun admin lama jika masih dalam format string
 if "admin" in users and isinstance(users["admin"], str):
-    users["admin"] = {
-        "password": users["admin"],
-        "nama": "Administrator"
-    }
+    users["admin"] = {
+        "password": users["admin"],
+        "nama": "Administrator"
+    }
 
 # Pastikan semua user memiliki struktur dictionary
 for uname, udata in list(users.items()):
-    if isinstance(udata, str):
-        users[uname] = {
-            "password": udata,
-            "nama": uname.capitalize()
-        }
+    if isinstance(udata, str):
+        users[uname] = {
+            "password": udata,
+             "nama": uname.capitalize()
+        }
 
 # Simpan hasil perbaikan kembali ke Firebase
 users_ref.set(users)
