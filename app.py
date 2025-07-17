@@ -60,7 +60,7 @@ def proses_login():
         st.session_state.login_error = "Username dan password tidak boleh kosong."
         return
 
-    if user in users and users[user] == pw:
+    if user in users and users[user]["password"] == pw:
         st.session_state.login = True
         st.session_state.username = user
         st.session_state.login_error = ""
