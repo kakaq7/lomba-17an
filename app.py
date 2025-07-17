@@ -127,7 +127,7 @@ if not st.session_state.login:
             elif kode != invite["aktif"]:
                 st.error("Kode undangan tidak valid.")
             else:
-                users[new_user] = {
+                users[user] = {
                     "password": new_pw,
                     "nama": full_name
                 }
