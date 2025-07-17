@@ -123,8 +123,9 @@ if not st.session_state.login:
                 elif users[username]["nama"].strip().lower() != lupa_nama.strip().lower():
                     st.error("Nama lengkap tidak cocok dengan data.")
                 else:
-                    users[username]["password"] = new_pw
-                    save_json(USER_FILE, users)
+                    db.reference("users").child(username).update({
+                        "password": new_pw
+                    })
                     st.success("Password berhasil direset. Silakan login kembali.")
                     st.session_state.lupa_password = False
 
