@@ -45,7 +45,24 @@ if not st.session_state.login_triggered:
 else:
     st.session_state.login_triggered = False
 
+# Konversi akun admin lama jika masih dalam format string
+if "admin" in users and isinstance(users["admin"], str):
+    users["admin"] = {
+        "password": users["admin"],
+        "nama": "Administrator"
+    }
+    save_json(USER_FILE, users)
 
+# Pastikan semua user memiliki struktur dictionary
+for uname, udata in list(users.items()):
+    if isinstance(udata, str):
+        users[uname] = {
+            "password": udata,
+            "nama": uname.capitalize()
+        }
+
+# Save kembali agar konsisten
+save_json(USER_FILE, users)
 
 # Admin Akun Default
 users = load_json(USER_FILE, {})
