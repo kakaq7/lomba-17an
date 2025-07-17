@@ -17,16 +17,6 @@ ACARA_FILE = "acara.json"
 ABSEN_FILE = "absensi.json"
 INVITE_FILE = "invite_codes.json"
 
-# Load/Save JSON
-def load_json(file, default):
-    if os.path.exists(file):
-        with open(file, "r") as f:
-            return json.load(f)
-    return default
-
-def save_json(file, data):
-    with open(file, "w") as f:
-        json.dump(data, f, indent=2)
 
 # Inisialisasi Firebase
 if not firebase_admin._apps:
@@ -34,6 +24,12 @@ if not firebase_admin._apps:
     firebase_admin.initialize_app(cred, {
         "databaseURL": "https://lomba-17an-default-rtdb.firebaseio.com/"
     })
+
+# Menyimpan ke Firebase
+db.reference("users").set(users_dict)
+
+# Mengambil dari Firebase
+users = db.reference("users").get()
 
 # Session Init
 if "login" not in st.session_state:
@@ -55,32 +51,35 @@ else:
     st.session_state.login_triggered = False
 
 # Admin Akun Default
-users = load_json(USER_FILE, {})
+# Ambil data users dari Firebase
+users_ref = db.reference("users")
+users = users_ref.get() or {}
+
+# Tambahkan admin jika belum ada
 if "admin" not in users:
-    users["admin"] = {
-        "password": "merdeka45",
-        "nama": "Administrator"
-    }
-    save_json(USER_FILE, users)
+    users["admin"] = {
+        "password": "merdeka45",
+        "nama": "Administrator"
+    }
+    users_ref.set(users)
 
 # Konversi akun admin lama jika masih dalam format string
 if "admin" in users and isinstance(users["admin"], str):
-    users["admin"] = {
-        "password": users["admin"],
-        "nama": "Administrator"
-    }
-    save_json(USER_FILE, users)
+    users["admin"] = {
+        "password": users["admin"],
+        "nama": "Administrator"
+    }
 
 # Pastikan semua user memiliki struktur dictionary
 for uname, udata in list(users.items()):
-    if isinstance(udata, str):
-        users[uname] = {
-            "password": udata,
-            "nama": uname.capitalize()
-        }
+    if isinstance(udata, str):
+        users[uname] = {
+            "password": udata,
+            "nama": uname.capitalize()
+        }
 
-# Save kembali agar konsisten
-save_json(USER_FILE, users)
+# Simpan hasil perbaikan kembali ke Firebase
+users_ref.set(users)
 
 def proses_login():
     user = st.session_state.get("login_user","").strip()
@@ -147,7 +146,13 @@ if not st.session_state.login:
         user = st.text_input("Username Baru (huruf kecil/angka tanpa spasi)")
         pw = st.text_input("Password Baru", type="password")
         kode = st.text_input("Kode Undangan")
-        invite = load_json(INVITE_FILE, {"aktif": ""})
+        # Ambil data dari Firebase
+        users_ref = db.reference("users")
+        users = users_ref.get() or {}
+        
+        invite_ref = db.reference("invite")
+        invite = invite_ref.get() or {"aktif": ""}
+
         if st.button("Daftar"):
             if not user or not pw or not kode:
                 st.error("Semua kolom harus diisi.")
@@ -158,11 +163,10 @@ if not st.session_state.login:
             elif kode != invite["aktif"]:
                 st.error("Kode undangan tidak valid.")
             else:
-                users[user] = {
+                users_ref.child(user).set({
                     "password": pw,
                     "nama": full_name
-                }
-                save_json(USER_FILE, users)
+                })
                 st.success("Akun berhasil dibuat. Silakan login.")
     st.stop()
 
@@ -180,8 +184,8 @@ if st.session_state.username == "admin":
     st.sidebar.title("Admin Panel")
     kode_baru = st.sidebar.text_input("Kode Undangan Baru")
     if st.sidebar.button("Perbarui Kode"):
-        invites = {"aktif": kode_baru}
-        save_json(INVITE_FILE, invites)
+        invite_ref = db.reference("invite")
+        invite_ref.set({"aktif": kode_baru})
         st.sidebar.success("Kode diperbarui")
 
 # Menu
