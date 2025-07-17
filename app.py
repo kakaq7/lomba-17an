@@ -47,19 +47,19 @@ else:
 
 # Konversi akun admin lama jika masih dalam format string
 if "admin" in users and isinstance(users["admin"], str):
-    users["admin"] = {
-        "password": users["admin"],
-        "nama": "Administrator"
-    }
-    save_json(USER_FILE, users)
+    users["admin"] = {
+        "password": users["admin"],
+        "nama": "Administrator"
+    }
+    save_json(USER_FILE, users)
 
 # Pastikan semua user memiliki struktur dictionary
 for uname, udata in list(users.items()):
-    if isinstance(udata, str):
-        users[uname] = {
-            "password": udata,
-            "nama": uname.capitalize()
-        }
+    if isinstance(udata, str):
+        users[uname] = {
+            "password": udata,
+            "nama": uname.capitalize()
+        }
 
 # Save kembali agar konsisten
 save_json(USER_FILE, users)
