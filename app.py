@@ -26,7 +26,7 @@ firebase_admin.initialize_app(cred)
 if not firebase_admin._apps:
     cred = credentials.Certificate(st.secrets["FIREBASE"])
     firebase_admin.initialize_app(cred, {
-        'databaseURL': st.secrets["FIREBASE"]["databaseURL"]
+        "databaseURL": "https://lomba-17an-default-rtdb.firebaseio.com/"
     })
 
 # Menyimpan ke Firebase
