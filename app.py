@@ -184,6 +184,7 @@ if st.session_state.username == "admin":
 menu = st.sidebar.selectbox("Menu", ["Manajemen Anggota", "Manajemen Lomba"])
 # Manajemen Lomba
 if menu == "Manajemen Lomba":
+    st.header("Lomba")
     
 # Manajemen Anggota & Absensi
 elif menu == "Manajemen Anggota":
