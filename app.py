@@ -45,6 +45,15 @@ if not st.session_state.login_triggered:
 else:
     st.session_state.login_triggered = False
 
+# Admin Akun Default
+users = load_json(USER_FILE, {})
+if "admin" not in users:
+    users["admin"] = {
+        "password": "merdeka45",
+        "nama": "Administrator"
+    }
+    save_json(USER_FILE, users)
+
 # Konversi akun admin lama jika masih dalam format string
 if "admin" in users and isinstance(users["admin"], str):
     users["admin"] = {
@@ -63,15 +72,6 @@ for uname, udata in list(users.items()):
 
 # Save kembali agar konsisten
 save_json(USER_FILE, users)
-
-# Admin Akun Default
-users = load_json(USER_FILE, {})
-if "admin" not in users:
-    users["admin"] = {
-        "password": "merdeka45",
-        "nama": "Administrator"
-    }
-    save_json(USER_FILE, users)
 
 def proses_login():
     user = st.session_state.get("login_user","").strip()
