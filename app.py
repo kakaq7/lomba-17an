@@ -308,8 +308,8 @@ elif menu == "Manajemen Anggota":
                     username in absen.get(f"{a['judul']} - {a['waktu']}", [])
                     for a in acara
                 )
-            persen = (hadir / total_acara) * 100 if total_acara else 0
-            st.write(f"{full_name} ({username}): {hadir}/{total_acara} hadir ({persen:.1f}%)")
+                persen = (hadir / total_acara) * 100 if total_acara else 0
+                st.write(f"{full_name} ({username}): {hadir}/{total_acara} hadir ({persen:.1f}%)")
     else:
         # Untuk user biasa (bukan admin): absen hari ini
         st.header("Absen Kehadiran Hari Ini")
