@@ -17,14 +17,8 @@ ACARA_FILE = "acara.json"
 ABSEN_FILE = "absensi.json"
 INVITE_FILE = "invite_codes.json"
 
-# Convert st.secrets to normal dict
-firebase_config = dict(st.secrets["FIREBASE"])
-cred = credentials.Certificate(firebase_config)
-firebase_admin.initialize_app(cred)
-
-# Inisialisasi Firebase
 if not firebase_admin._apps:
-    cred = credentials.Certificate(st.secrets["FIREBASE"])
+    cred = credentials.Certificate(dict(st.secrets["FIREBASE"]))
     firebase_admin.initialize_app(cred, {
         "databaseURL": "https://lomba-17an-default-rtdb.firebaseio.com/"
     })
