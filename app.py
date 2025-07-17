@@ -56,9 +56,9 @@ if "admin" in users and isinstance(users["admin"], str):
 # Pastikan semua user memiliki struktur dictionary
 for uname, udata in list(users.items()):
     if isinstance(udata, str):
-        users[uname] = {
-            "password": udata,
-            "nama": uname.capitalize()
+        users[uname] = {
+            "password": udata,
+            "nama": uname.capitalize()
         }
 
 # Save kembali agar konsisten
