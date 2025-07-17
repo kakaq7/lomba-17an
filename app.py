@@ -344,16 +344,15 @@ elif menu == "Manajemen Anggota":
 
         elif mode == "Kehadiran":
             st.header("Persentase Kehadiran")
-            semua_user = [u for u in users if u != "admin"]
+            semua_user = [(u, users[u]["nama"]) for u in users if u != "admin"]
             total_acara = len(acara)
-            for full_name in semua_user:
-                hadir = sum(
-                    full_name in absen.get(f"{a['judul']} - {a['waktu']}", [])
-                    for a in acara
-                )
-                persen = (hadir / total_acara) * 100 if total_acara else 0
-                st.write(f"{full_name}: {hadir}/{total_acara} hadir ({persen:.1f}%)")
-
+            for username, full_name in semua_user:
+                hadir = sum(
+                username in absen.get(f"{a['judul']} - {a['waktu']}", [])
+                for a in acara
+            )
+            persen = (hadir / total_acara) * 100 if total_acara else 0
+            st.write(f"{full_name} ({username}): {hadir}/{total_acara} hadir ({persen:.1f}%)")
     else:
         # Untuk user biasa (bukan admin): absen hari ini
         st.header("Absen Kehadiran Hari Ini")
