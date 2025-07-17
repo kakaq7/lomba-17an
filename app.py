@@ -188,8 +188,11 @@ if menu == "Manajemen Lomba":
     
 # Manajemen Anggota & Absensi
 elif menu == "Manajemen Anggota":
-    acara = load_json(ACARA_FILE, [])
-    absen = load_json(ABSEN_FILE, {})
+    acara_ref = db.reference("acara")
+    acara = acara_ref.get() or []
+
+    absen_ref = db.reference("absensi")
+    absen = absen_ref.get() or {}
 
     if st.session_state.username == "admin":
         mode = st.selectbox("Pilih", ["Buat Acara", "Daftar Acara", "Kehadiran"])
@@ -208,7 +211,7 @@ elif menu == "Manajemen Anggota":
                         "waktu": waktu.strftime("%d-%m-%Y %H:%M"),
                         "kode": kode
                     })
-                    save_json(ACARA_FILE, acara)
+                    db.reference("acara").set(acara)
                     st.success("Acara dibuat.")
                 except:
                     st.error("Format waktu salah.")
@@ -245,7 +248,7 @@ elif menu == "Manajemen Anggota":
                         hapus_index = st.session_state.get("hapus_index", None)
                         if hapus_index is not None:
                             acara.pop(hapus_index)
-                            save_json(ACARA_FILE, acara)
+                            db.reference("acara").set(acara)
                             st.session_state.hapus_index = None
                             st.rerun()
 
@@ -276,7 +279,7 @@ elif menu == "Manajemen Anggota":
                                 acara[i]["judul"] = new_judul
                                 acara[i]["waktu"] = new_waktu
                                 acara[i]["kode"] = new_kode
-                                save_json(ACARA_FILE, acara)
+                                db.reference("acara").set(acara)
 
                                 st.session_state["edit_success"] = True
                                 st.session_state["edit_success_index"] = i
@@ -333,5 +336,5 @@ elif menu == "Manajemen Anggota":
                         st.warning("Sudah absen.")
                     else:
                         absen[pilihan].append(st.session_state.username)
-                        save_json(ABSEN_FILE, absen)
+                        db.reference("absensi").set(absen)
                         st.success("Berhasil absen.")
