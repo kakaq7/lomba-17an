@@ -48,8 +48,8 @@ else:
 # Konversi akun admin lama jika masih dalam format string
 if "admin" in users and isinstance(users["admin"], str):
     users["admin"] = {
-        "password": users["admin"],
-        "nama": "Administrator"
+        "password": users["admin"],
+        "nama": "Administrator"
     }
     save_json(USER_FILE, users)
 
