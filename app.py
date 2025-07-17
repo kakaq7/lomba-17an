@@ -185,7 +185,7 @@ if st.session_state.username == "admin":
     kode_baru = st.sidebar.text_input("Kode Undangan Baru")
     if st.sidebar.button("Perbarui Kode"):
         invite_ref = db.reference("invite")
-        invite_ref.set({"aktif": kode_baru})
+        invite_ref.set({"aktif": kode_baru})
         st.sidebar.success("Kode diperbarui")
 
 # Menu
