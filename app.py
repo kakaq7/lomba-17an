@@ -120,7 +120,7 @@ if not st.session_state.login:
                     st.error("Semua kolom harus diisi.")
                 elif username not in users:
                     st.error("Username tidak ditemukan.")
-                elif users[username]["nama"].strip().lower() != username.strip().lower():
+                elif users[username]["nama"].strip().lower() != lupa_nama.strip().lower():
                     st.error("Nama lengkap tidak cocok dengan data.")
                 else:
                     users[username]["password"] = new_pw
