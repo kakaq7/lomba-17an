@@ -229,10 +229,13 @@ elif menu == "Manajemen Anggota":
                     daftar = absen.get(key, [])
 
                     st.subheader(key)
-                    st.write(f"Jumlah hadir: {len(daftar)}")
-                    for username in daftar:
-                        nama_lengkap = users.get(username, {}).get("nama", f"{username} (nama tidak ditemukan)")
-                        st.write(f"✅ {nama_lengkap}")
+                    with st.expander(f"📌 {ac['judul']} ({ac['waktu']}) - {len(daftar)} orang hadir"):
+                        if daftar:
+                            for username in daftar:
+                                nama_lengkap = users.get(username, {}).get("nama", f"{username} (nama tidak ditemukan)")
+                                st.write(f"✅ {nama_lengkap}")
+                        else:
+                            st.info("Belum ada yang absen.")
 
                     # Tombol Edit & Hapus
                     col1, col2 = st.columns([1, 1])
