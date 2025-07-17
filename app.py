@@ -89,17 +89,22 @@ if not st.session_state.login:
                 st.rerun()
         else:
             st.header("Reset Password")
+            lupa_nama = st.text_input("Nama Lengkap")
             username = st.text_input("Username")
             new_pw = st.text_input("Password Baru", type="password")
 
             if st.button("Reset Password"):
-                if username in users:
-                    users[username] = new_pw
+                if not lupa_nama or not username or not new_pw:
+                    st.error("Semua kolom harus diisi.")
+                elif username not in users:
+                    st.error("Username tidak ditemukan.")
+                elif users[username]["nama"].strip().lower() != username.strip().lower():
+                    st.error("Nama lengkap tidak cocok dengan data.")
+                else:
+                    users[username]["password"] = new_pw
                     save_json(USER_FILE, users)
                     st.success("Password berhasil direset. Silakan login kembali.")
                     st.session_state.lupa_password = False
-                else:
-                    st.error("Username tidak ditemukan.")
 
             if st.button("Kembali ke Login"):
                 st.session_state.lupa_password = False
@@ -107,19 +112,25 @@ if not st.session_state.login:
         
     elif mode == "Daftar Akun":
         st.header("Daftar Akun Baru")
-        user = st.text_input("Username Baru (Nama Lengkap)")
+        full_name = st.text_input("Nama Lengkap")
+        user = st.text_input("Username Baru (huruf kecil/angka tanpa spasi)")
         pw = st.text_input("Password Baru", type="password")
         kode = st.text_input("Kode Undangan")
         invite = load_json(INVITE_FILE, {"aktif": ""})
         if st.button("Daftar"):
             if not user or not pw or not kode:
                 st.error("Semua kolom harus diisi.")
+            elif not new_user.isalnum() or not new_user.islower() or " " in new_user:
+                st.error("Username hanya boleh huruf kecil dan angka tanpa spasi.")
             elif user in users:
                 st.error("Username sudah ada.")
             elif kode != invite["aktif"]:
                 st.error("Kode undangan tidak valid.")
             else:
-                users[user] = pw
+                users[new_user] = {
+                    "password": new_pw,
+                    "nama": full_name
+                }
                 save_json(USER_FILE, users)
                 st.success("Akun berhasil dibuat. Silakan login.")
     st.stop()
