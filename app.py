@@ -120,7 +120,7 @@ if not st.session_state.login:
         if st.button("Daftar"):
             if not user or not pw or not kode:
                 st.error("Semua kolom harus diisi.")
-            elif not user.isalnum() or not user.islower() or "" in user:
+            elif not user.isalnum() or not user.islower() or " " in user:
                 st.error("Username hanya boleh huruf kecil dan angka tanpa spasi.")
             elif user in users:
                 st.error("Username sudah ada.")
