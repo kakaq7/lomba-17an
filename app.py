@@ -141,7 +141,7 @@ def proses_logout():
     st.session_state.login_error = False
 
 # Sidebar: Logout + Admin Panel
-st.sidebar.title(f"Hai, {st.session_state.username}")
+st.sidebar.title(f"Hai, {users[st.session_state.username]['nama']}")
 st.sidebar.button("Logout", on_click=proses_logout)
 
 # Admin: Update Kode Undangan
