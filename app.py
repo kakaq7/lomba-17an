@@ -365,7 +365,9 @@ elif menu == "Manajemen Anggota":
             pilihan = st.selectbox("Pilih Acara", [f"{a['judul']} - {a['waktu']}" for a in aktif])
             dipilih = next((a for a in aktif if f"{a['judul']} - {a['waktu']}" == pilihan), None)
 
-            st.text_input("Nama", value=st.session_state.username, disabled=True)
+            username = st.session_state.username
+            full_name = users.get(username, {}).get("nama", "")
+            st.text_input("Nama", value=full_name, disabled=True)
             kode_input = st.text_input("Masukkan Kode Absensi")
 
             if st.button("Absen"):
