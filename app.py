@@ -147,8 +147,8 @@ if not st.session_state.login:
         pw = st.text_input("Password Baru", type="password")
         kode = st.text_input("Kode Undangan")
         # Ambil data dari Firebase
-        users_ref = db.reference("users")
-        users = users_ref.get() or {}
+        users_ref = db.reference("users")
+        users = users_ref.get() or {}
         
         invite_ref = db.reference("invite")
         invite = invite_ref.get() or {"aktif": ""}
