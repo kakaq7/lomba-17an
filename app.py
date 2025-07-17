@@ -274,11 +274,9 @@ elif menu == "Manajemen Anggota":
 
                     st.subheader(key)
                     st.write(f"Jumlah hadir: {len(daftar)}")
-                    for nama in daftar:
-                        username = st.session_state.username
-                        nama_lengkap = users.get(username, {}).get("nama", "Nama tidak ditemukan")
+                    for username in daftar:
+                        nama_lengkap = users.get(username, {}).get("nama", f"{username} (nama tidak ditemukan)")
                         st.write(f"✅ {nama_lengkap}")
-
 
                     # Tombol Edit & Hapus
                     col1, col2 = st.columns([1, 1])
