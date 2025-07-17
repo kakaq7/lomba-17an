@@ -183,62 +183,8 @@ if st.session_state.username == "admin":
 # Menu
 menu = st.sidebar.selectbox("Menu", ["Manajemen Anggota", "Manajemen Lomba"])
 # Manajemen Lomba
-data = load_json(DATA_FILE, {})
 if menu == "Manajemen Lomba":
-    st.header("Tambah Lomba")
-    nama = st.text_input("Nama Lomba")
-    if st.button("Tambah Lomba"):
-        if nama in data:
-            st.warning("Lomba sudah ada.")
-        else:
-            data[nama] = {"peserta": [], "pemenang": []}
-            save_json(DATA_FILE, data)
-            st.success("Lomba ditambahkan.")
-
-    if data:
-        st.header("Tambah Peserta & Juara")
-        lomba = st.selectbox("Pilih Lomba", list(data.keys()))
-        peserta = st.text_input("Nama Peserta")
-        if st.button("Tambah Peserta"):
-            if peserta and peserta not in data[lomba]["peserta"]:
-                data[lomba]["peserta"].append(peserta)
-                save_json(DATA_FILE, data)
-                st.success("Peserta ditambahkan.")
-
-        st.subheader("Tentukan Juara")
-        if data[lomba]["peserta"]:
-            j1 = st.selectbox("Juara 1", data[lomba]["peserta"], key="j1")
-            j2 = st.selectbox("Juara 2", data[lomba]["peserta"], key="j2")
-            j3 = st.selectbox("Juara 3", data[lomba]["peserta"], key="j3")
-            if st.button("Simpan Juara"):
-                if len({j1, j2, j3}) < 3:
-                    st.error("Juara tidak boleh sama.")
-                else:
-                    data[lomba]["pemenang"] = [j1, j2, j3]
-                    save_json(DATA_FILE, data)
-                    st.success("Juara disimpan.")
-
-        st.header("Lihat Juara")
-        for l, isi in data.items():
-            if isi["pemenang"]:
-                st.subheader(l)
-                for i, p in enumerate(isi["pemenang"], 1):
-                    st.write(f"Juara {i}: {p}")
-
-        if st.button("Download PDF Juara"):
-            pdf = FPDF()
-            pdf.add_page()
-            pdf.set_font("Arial", size=12)
-            pdf.cell(200, 10, "Daftar Juara Lomba", ln=1, align="C")
-            for l, isi in data.items():
-                if isi["pemenang"]:
-                    pdf.cell(200, 10, f"Lomba: {l}", ln=1)
-                    for i, p in enumerate(isi["pemenang"], 1):
-                        pdf.cell(200, 10, f"Juara {i}: {p}", ln=1)
-            pdf.output("juara.pdf")
-            with open("juara.pdf", "rb") as f:
-                st.download_button("📥 Unduh PDF", f, file_name="juara.pdf")
-
+    
 # Manajemen Anggota & Absensi
 elif menu == "Manajemen Anggota":
     acara = load_json(ACARA_FILE, [])
