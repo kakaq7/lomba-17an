@@ -124,7 +124,7 @@ if not st.session_state.login:
                     st.error("Nama lengkap tidak cocok dengan data.")
                 else:
                     db.reference("users").child(username).update({
-                        "password": new_pw
+                        "password": new_pw
                     })
                     st.success("Password berhasil direset. Silakan login kembali.")
                     st.session_state.lupa_password = False
