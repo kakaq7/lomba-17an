@@ -48,7 +48,10 @@ else:
 # Admin Akun Default
 users = load_json(USER_FILE, {})
 if "admin" not in users:
-    users["admin"] = "merdeka45"
+    users["admin"] = {
+        "password": "merdeka45",
+        "nama": "Administrator"
+    }
     save_json(USER_FILE, users)
 
 def proses_login():
