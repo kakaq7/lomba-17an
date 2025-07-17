@@ -23,9 +23,6 @@ if not firebase_admin._apps:
         "databaseURL": "https://lomba-17an-default-rtdb.firebaseio.com/"
     })
 
-# Mengambil dari Firebase
-users = db.reference("users").get()
-
 # Session Init
 if "login" not in st.session_state:
     st.session_state.login = False
