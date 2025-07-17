@@ -23,9 +23,6 @@ if not firebase_admin._apps:
         "databaseURL": "https://lomba-17an-default-rtdb.firebaseio.com/"
     })
 
-# Menyimpan ke Firebase
-db.reference("users").set(users_dict)
-
 # Mengambil dari Firebase
 users = db.reference("users").get()
 
