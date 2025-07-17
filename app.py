@@ -128,7 +128,7 @@ if not st.session_state.login:
                 st.error("Kode undangan tidak valid.")
             else:
                 users[user] = {
-                    "password": new_pw,
+                    "password": pw,
                     "nama": full_name
                 }
                 save_json(USER_FILE, users)
