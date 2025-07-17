@@ -229,7 +229,7 @@ elif menu == "Manajemen Anggota":
                     daftar = absen.get(key, [])
 
                     st.subheader(key)
-                    with st.expander(f"📌 {ac['judul']} ({ac['waktu']}) - {len(daftar)} orang hadir"):
+                    with st.expander(f"📌 {len(daftar)} orang hadir"):
                         if daftar:
                             for username in daftar:
                                 nama_lengkap = users.get(username, {}).get("nama", f"{username} (nama tidak ditemukan)")
