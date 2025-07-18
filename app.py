@@ -11,14 +11,6 @@ from datetime import datetime
 from pytz import timezone
 from fpdf import FPDF
 
-# Tambahkan field email jika belum ada
-for uname, udata in users.items():
-    if "email" not in udata:
-        users[uname]["email"] = ""  # atau None
-
-# Simpan kembali ke Firebase
-users_ref.set(users)
-
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
@@ -54,6 +46,14 @@ else:
 # Ambil data users dari Firebase
 users_ref = db.reference("users")
 users = users_ref.get() or {}
+
+# Tambahkan field email jika belum ada
+for uname, udata in users.items():
+    if "email" not in udata:
+        users[uname]["email"] = ""  # atau None
+
+# Simpan kembali ke Firebase
+users_ref.set(users)
 
 # Tambahkan admin jika belum ada
 if "admin" not in users:
