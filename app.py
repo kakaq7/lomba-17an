@@ -2,20 +2,17 @@ import streamlit as st
 import json
 import os
 import firebase_admin
+import hashlib
 from firebase_admin import credentials, db
 from datetime import datetime
 from pytz import timezone
 from fpdf import FPDF
 
+def hash_password(password):
+    return hashlib.sha256(password.encode()).hexdigest()
+
 # Zona Waktu Indonesia
 wib = timezone("Asia/Jakarta")
-
-# File Data
-DATA_FILE = "data_lomba.json"
-USER_FILE = "users.json"
-ACARA_FILE = "acara.json"
-ABSEN_FILE = "absensi.json"
-INVITE_FILE = "invite_codes.json"
 
 if not firebase_admin._apps:
     cred = credentials.Certificate(dict(st.secrets["FIREBASE"]))
@@ -50,7 +47,7 @@ users = users_ref.get() or {}
 # Tambahkan admin jika belum ada
 if "admin" not in users:
     users["admin"] = {
-        "password": "merdeka45",
+        "password": hash_password("merdeka45"),
         "nama": "Administrator"
     }
     users_ref.set(users)
@@ -82,7 +79,7 @@ def proses_login():
         st.session_state.login_error = "Username dan password tidak boleh kosong."
         return
 
-    if user in users and users[user]["password"] == pw:
+    if user in users and users[user]["password"] == hash_password(pw):
         st.session_state.login = True
         st.session_state.username = user
         st.session_state.login_error = ""
@@ -124,7 +121,7 @@ if not st.session_state.login:
                     st.error("Nama lengkap tidak cocok dengan data.")
                 else:
                     db.reference("users").child(username).update({
-                        "password": new_pw
+                        "password": hash_password(new_pw)
                     })
                     st.success("Password berhasil direset. Silakan login kembali.")
                     st.session_state.lupa_password = False
@@ -157,7 +154,7 @@ if not st.session_state.login:
                 st.error("Kode undangan tidak valid.")
             else:
                 users_ref.child(user).set({
-                    "password": pw,
+                    "password": hash_password(pw),
                     "nama": full_name
                 })
                 st.success("Akun berhasil dibuat. Silakan login.")
