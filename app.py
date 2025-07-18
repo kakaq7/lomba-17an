@@ -113,9 +113,13 @@ def proses_login():
 # Login/Register
 if not st.session_state.login:
     mode = st.selectbox("Pilih", ["Login", "Daftar Akun"])
-    if mode != "Login":
+    if mode == "Login" and (st.session_state.get("lupa_password") or st.session_state.get("password_reset_success")):
         st.session_state.lupa_password = False
         st.session_state.password_reset_success = False
+        st.session_state.otp_sent = False
+        st.session_state.otp_code = ""
+        st.session_state.reset_username = ""
+        st.rerun()
 
     if mode == "Login":
         if not st.session_state.lupa_password:
