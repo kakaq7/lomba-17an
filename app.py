@@ -173,6 +173,11 @@ if not st.session_state.login:
                         del st.session_state.otp_sent
                         del st.session_state.otp_code
                         del st.session_state.reset_username
+                if st.button("❌ Batalkan"):
+                    st.session_state.otp_sent = False
+                    st.session_state.otp_code = ""
+                    st.session_state.reset_username = ""
+                    st.rerun()
 
             if st.button("Kembali ke Login"):
                 st.session_state.lupa_password = False
