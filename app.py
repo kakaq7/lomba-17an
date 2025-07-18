@@ -110,9 +110,8 @@ if not st.session_state.login:
     mode = st.selectbox("Pilih", ["Login", "Daftar Akun"])
     if mode == "Login":
         st.session_state.setdefault("lupa_password", False)
-
+        st.session_state.setdefault("password_reset_success", False)
         if not st.session_state.lupa_password:
-            st.session_state.login_attempted = False
             st.header("Login Anggota Karang Taruna")
             st.text_input("Username", key="login_user")
             st.text_input("Password", type="password", key="login_pass")
@@ -128,6 +127,9 @@ if not st.session_state.login:
                 st.rerun()
         else:
             st.header("Reset Password")
+            st.session_state.setdefault("otp_sent", False)
+            st.session_state.setdefault("otp_code", "")
+
             if "otp_sent" not in st.session_state:
                 st.session_state.otp_sent = False
             if "otp_code" not in st.session_state:
@@ -182,11 +184,12 @@ if not st.session_state.login:
                     st.session_state.otp_code = ""
                     st.session_state.reset_username = ""
                     st.rerun()
-                if st.session_state.get("password_reset_success"):
-                    if st.button("Kembali ke Login"):
-                        st.session_state.lupa_password = False
-                        st.session_state.password_reset_success = False
-                        st.rerun()
+                    
+    if st.session_state.get("password_reset_success"):
+        if st.button("Kembali ke Login"):
+            st.session_state.lupa_password = False
+            st.session_state.password_reset_success = False
+            st.rerun()
         
     elif mode == "Daftar Akun":
         st.header("Daftar Akun Baru")
