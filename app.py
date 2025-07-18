@@ -14,10 +14,16 @@ from datetime import datetime
 from pytz import timezone
 from fpdf import FPDF
 
-st.title("🇮🇩 Aplikasi Karanggg Taruna Bina Bhakti")
 st.session_state.setdefault("login", False)
 st.session_state.setdefault("lupa_password", False)
 st.session_state.setdefault("password_reset_success", False)
+st.session_state.setdefault("otp_sent", False)
+st.session_state.setdefault("otp_code", "")
+st.session_state.setdefault("reset_username", "")
+st.session_state.setdefault("login_attempted", False)
+st.session_state.setdefault("login_error", "")
+
+st.title("🇮🇩 Aplikasi Karang Taruna Bina Bhakti")
 
 
 def generate_otp():
@@ -111,8 +117,7 @@ def proses_login():
         st.session_state.login_error = "Username atau password salah."
 
 # Login/Register
-if not st.session_state.login:
-    mode = st.selectbox("Pilih", ["Login", "Daftar Akun"])
+mode = st.selectbox("Pilih", ["Login", "Daftar Akun"])
     if mode == "Login" and (st.session_state.get("lupa_password") or st.session_state.get("password_reset_success")):
         st.session_state.lupa_password = False
         st.session_state.password_reset_success = False
@@ -120,7 +125,7 @@ if not st.session_state.login:
         st.session_state.otp_code = ""
         st.session_state.reset_username = ""
         st.rerun()
-    if not st.session_state.get("login", False):
+    if not st.session_state.login:
         if mode == "Login":
             if not st.session_state.lupa_password:
                 st.header("Login Anggota Karang Taruna")
