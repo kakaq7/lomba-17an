@@ -44,14 +44,6 @@ else:
 users_ref = db.reference("users")
 users = users_ref.get() or {}
 
-for uname, udata in users.items():
-    if "password" in udata and len(udata["password"]) < 60:
-        hashed_pw = hash_password(udata["password"])
-        users[uname]["password"] = hashed_pw
-
-# Simpan kembali ke Firebase
-users_ref.set(users)
-
 # Tambahkan admin jika belum ada
 if "admin" not in users:
     users["admin"] = {
@@ -59,24 +51,6 @@ if "admin" not in users:
         "nama": "Administrator"
     }
     users_ref.set(users)
-
-# Konversi akun admin lama jika masih dalam format string
-if "admin" in users and isinstance(users["admin"], str):
-    users["admin"] = {
-        "password": users["admin"],
-        "nama": "Administrator"
-    }
-
-# Pastikan semua user memiliki struktur dictionary
-for uname, udata in list(users.items()):
-    if isinstance(udata, str):
-        users[uname] = {
-            "password": udata,
-             "nama": uname.capitalize()
-        }
-
-# Simpan hasil perbaikan kembali ke Firebase
-users_ref.set(users)
 
 def proses_login():
     user = st.session_state.get("login_user","").strip()
