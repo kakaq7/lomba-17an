@@ -118,110 +118,110 @@ def proses_login():
 
 # Login/Register
 mode = st.selectbox("Pilih", ["Login", "Daftar Akun"])
-    if mode == "Login" and (st.session_state.get("lupa_password") or st.session_state.get("password_reset_success")):
-        st.session_state.lupa_password = False
-        st.session_state.password_reset_success = False
-        st.session_state.otp_sent = False
-        st.session_state.otp_code = ""
-        st.session_state.reset_username = ""
-        st.rerun()
-    if not st.session_state.login:
-        if mode == "Login":
-            if not st.session_state.lupa_password:
-                st.header("Login Anggota Karang Taruna")
-                st.text_input("Username", key="login_user")
-                st.text_input("Password", type="password", key="login_pass")
-                user_input = st.session_state.get("login_user", "")
-                pass_input = st.session_state.get("login_pass", "")
-                st.button("Login", on_click=proses_login)
+if mode == "Login" and (st.session_state.get("lupa_password") or st.session_state.get("password_reset_success")):
+    st.session_state.lupa_password = False
+    st.session_state.password_reset_success = False
+    st.session_state.otp_sent = False
+    st.session_state.otp_code = ""
+    st.session_state.reset_username = ""
+    st.rerun()
+if not st.session_state.login:
+    if mode == "Login":
+        if not st.session_state.lupa_password:
+            st.header("Login Anggota Karang Taruna")
+            st.text_input("Username", key="login_user")
+            st.text_input("Password", type="password", key="login_pass")
+            user_input = st.session_state.get("login_user", "")
+            pass_input = st.session_state.get("login_pass", "")
+            st.button("Login", on_click=proses_login)
         
-                if st.session_state.login_attempted and st.session_state.login_error:
-                    st.error(st.session_state.login_error)
+            if st.session_state.login_attempted and st.session_state.login_error:
+                st.error(st.session_state.login_error)
                 
-                if st.button("Lupa Password?"):
-                    st.session_state.lupa_password = True
-                    st.rerun()
-            else:
-                st.header("Reset Password")
-                if not st.session_state.otp_sent:
-                    lupa_nama = st.text_input("Nama Lengkap")
-                    username = st.text_input("Username")
+            if st.button("Lupa Password?"):
+                st.session_state.lupa_password = True
+                st.rerun()
+        else:
+            st.header("Reset Password")
+            if not st.session_state.otp_sent:
+                lupa_nama = st.text_input("Nama Lengkap")
+                username = st.text_input("Username")
 
-                    if st.button("Kirim OTP ke Email"):
-                        if not lupa_nama or not username:
-                            st.error("Semua kolom harus diisi.")
-                        elif username not in users:
-                            st.error("Username tidak ditemukan.")
-                        elif users[username]["nama"].strip().lower() != lupa_nama.strip().lower():
-                            st.error("Nama lengkap tidak cocok dengan data.")
-                        else:
-                            otp = generate_otp()
-                            if send_otp_email(users[username]["email"], otp):
-                                st.session_state.otp_code = otp
-                                st.session_state.reset_username = username
-                                st.session_state.otp_sent = True
-                                st.success(f"Kode OTP telah dikirim ke {users[username]['email']}.")
-                                time.sleep(2)
-                                st.rerun()
-                else:
-                # Tahap 2: Verifikasi OTP dan ganti password
-                    input_otp = st.text_input("Masukkan Kode OTP")
-                    new_pw = st.text_input("Password Baru", type="password")
-                
-                    if st.button("Reset Password"):
-                        if input_otp != st.session_state.otp_code:
-                            st.error("Kode OTP salah.")
-                        elif not new_pw:
-                            st.error("Password tidak boleh kosong.")
-                        else:
-                            username = st.session_state.reset_username
-                            db.reference("users").child(username).update({
-                                "password": hash_password(new_pw)
-                            })
-                            st.success("Password berhasil direset. Silakan login kembali.")
-                            st.session_state.password_reset_success = True
-                            st.session_state.lupa_password = False
-                            st.session_state.otp_sent = False
-                            st.session_state.otp_code = ""
-                            st.session_state.reset_username = ""
+                if st.button("Kirim OTP ke Email"):
+                    if not lupa_nama or not username:
+                        st.error("Semua kolom harus diisi.")
+                    elif username not in users:
+                        st.error("Username tidak ditemukan.")
+                    elif users[username]["nama"].strip().lower() != lupa_nama.strip().lower():
+                        st.error("Nama lengkap tidak cocok dengan data.")
+                    else:
+                        otp = generate_otp()
+                        if send_otp_email(users[username]["email"], otp):
+                            st.session_state.otp_code = otp
+                            st.session_state.reset_username = username
+                            st.session_state.otp_sent = True
+                            st.success(f"Kode OTP telah dikirim ke {users[username]['email']}.")
+                            time.sleep(2)
                             st.rerun()
-                            
-                    if st.button("❌ Batalkan"):
+            else:
+                # Tahap 2: Verifikasi OTP dan ganti password
+                input_otp = st.text_input("Masukkan Kode OTP")
+                new_pw = st.text_input("Password Baru", type="password")
+                
+                if st.button("Reset Password"):
+                    if input_otp != st.session_state.otp_code:
+                        st.error("Kode OTP salah.")
+                    elif not new_pw:
+                        st.error("Password tidak boleh kosong.")
+                    else:
+                        username = st.session_state.reset_username
+                        db.reference("users").child(username).update({
+                            "password": hash_password(new_pw)
+                        })
+                        st.success("Password berhasil direset. Silakan login kembali.")
+                        st.session_state.password_reset_success = True
                         st.session_state.lupa_password = False
                         st.session_state.otp_sent = False
                         st.session_state.otp_code = ""
                         st.session_state.reset_username = ""
                         st.rerun()
+                            
+                if st.button("❌ Batalkan"):
+                    st.session_state.lupa_password = False
+                    st.session_state.otp_sent = False
+                    st.session_state.otp_code = ""
+                    st.session_state.reset_username = ""
+                    st.rerun()
         
-        elif mode == "Daftar Akun":
-            st.header("Daftar Akun Baru")
-            full_name = st.text_input("Nama Lengkap")
-            user = st.text_input("Username Baru (huruf kecil/angka tanpa spasi)")
-            pw = st.text_input("Password Baru", type="password")
-            kode = st.text_input("Kode Undangan")
-            # Ambil data dari Firebase
-            users_ref = db.reference("users")
-            users = users_ref.get() or {}
+     elif mode == "Daftar Akun":
+        st.header("Daftar Akun Baru")
+        full_name = st.text_input("Nama Lengkap")
+        user = st.text_input("Username Baru (huruf kecil/angka tanpa spasi)")
+        pw = st.text_input("Password Baru", type="password")
+        kode = st.text_input("Kode Undangan")
+        # Ambil data dari Firebase
+        users_ref = db.reference("users")
+        users = users_ref.get() or {}
         
-            invite_ref = db.reference("invite")
-            invite = invite_ref.get() or {"aktif": ""}
+        invite_ref = db.reference("invite")
+        invite = invite_ref.get() or {"aktif": ""}
 
-            if st.button("Daftar"):
-                if not user or not pw or not kode:
-                    st.error("Semua kolom harus diisi.")
-                elif not user.isalnum() or not user.islower() or " " in user:
-                    st.error("Username hanya boleh huruf kecil dan angka tanpa spasi.")
-                elif user in users:
-                    st.error("Username sudah ada.")
-                elif kode != invite["aktif"]:
-                    st.error("Kode undangan tidak valid.")
-                else:
-                    users_ref.child(user).set({
-                        "password": hash_password(pw),
-                        "nama": full_name
-                    })
-                    st.success("Akun berhasil dibuat. Silakan login.")
-        st.stop()
+        if st.button("Daftar"):
+            if not user or not pw or not kode:
+                st.error("Semua kolom harus diisi.")
+            elif not user.isalnum() or not user.islower() or " " in user:
+                st.error("Username hanya boleh huruf kecil dan angka tanpa spasi.")
+            elif user in users:
+                st.error("Username sudah ada.")
+            elif kode != invite["aktif"]:
+                st.error("Kode undangan tidak valid.")
+            else:
+                users_ref.child(user).set({
+                    "password": hash_password(pw),
+                    "nama": full_name
+                })
+                st.success("Akun berhasil dibuat. Silakan login.")
+    st.stop()
 
 def proses_logout():
     st.session_state.login = False
