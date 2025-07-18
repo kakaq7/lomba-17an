@@ -45,7 +45,7 @@ users_ref = db.reference("users")
 users = users_ref.get() or {}
 
 for uname, udata in users_data.items():
-    if "password" in udata and len(udata["password"]) < 60:  # Anggap belum di-hash
+    if "password" in udata and len(udata["password"]) < 60:
         hashed_pw = hash_password(udata["password"])
         users_data[uname]["password"] = hashed_pw
 
