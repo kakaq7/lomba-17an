@@ -167,6 +167,9 @@ if not st.session_state.login:
                         })
                         st.success("Password berhasil direset. Silakan login kembali.")
                         st.session_state.lupa_password = False
+                        st.session_state.pop("otp_sent", None)
+                        st.session_state.pop("otp_code", None)
+                        st.session_state.pop("reset_username", None)
                         del st.session_state.otp_sent
                         del st.session_state.otp_code
                         del st.session_state.reset_username
