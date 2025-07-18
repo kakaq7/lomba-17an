@@ -138,7 +138,7 @@ if not st.session_state.login:
                     st.rerun()
             else:
                 st.header("Reset Password")
-                if not st.session_state.get("otp_sent", False):
+                if not st.session_state.otp_sent:
                     lupa_nama = st.text_input("Nama Lengkap")
                     username = st.text_input("Username")
 
