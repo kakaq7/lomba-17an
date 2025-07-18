@@ -133,7 +133,7 @@ if not st.session_state.login:
                 username = st.text_input("Username")
 
                 if st.button("Kirim OTP ke Email"):
-                    if not lupa_nama or not username or not new_pw:
+                    if not lupa_nama or not username:
                         st.error("Semua kolom harus diisi.")
                     elif username not in users:
                         st.error("Username tidak ditemukan.")
