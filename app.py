@@ -117,14 +117,16 @@ def proses_login():
         st.session_state.login_error = "Username atau password salah."
 
 # Login/Register
-mode = st.selectbox("Pilih", ["Login", "Daftar Akun"])
-if mode != "Login":
-    st.session_state.lupa_password = False
-    st.session_state.password_reset_success = False
-    st.session_state.otp_sent = False
-    st.session_state.otp_code = ""
-    st.session_state.reset_username = ""
-if not st.session_state.login:
+if not st.session_state.get("login"):
+    mode = st.selectbox("Pilih", ["Login", "Daftar Akun"])
+
+    if mode != "Login":
+        st.session_state.lupa_password = False
+        st.session_state.password_reset_success = False
+        st.session_state.otp_sent = False
+        st.session_state.otp_code = ""
+        st.session_state.reset_username = ""
+
     if mode == "Login":
         if not st.session_state.lupa_password:
             st.header("Login Anggota Karang Taruna")
@@ -133,15 +135,16 @@ if not st.session_state.login:
             user_input = st.session_state.get("login_user", "")
             pass_input = st.session_state.get("login_pass", "")
             st.button("Login", on_click=proses_login)
-        
+
             if st.session_state.login_attempted and st.session_state.login_error:
                 st.error(st.session_state.login_error)
-                
+
             if st.button("Lupa Password?"):
                 st.session_state.lupa_password = True
                 st.rerun()
         else:
             st.header("Reset Password")
+
             if not st.session_state.otp_sent:
                 lupa_nama = st.text_input("Nama Lengkap")
                 username = st.text_input("Username")
@@ -162,6 +165,7 @@ if not st.session_state.login:
                             st.success(f"Kode OTP telah dikirim ke {users[username]['email']}.")
                             time.sleep(2)
                             st.rerun()
+
                 if st.button("❌ Batalkan"):
                     st.session_state.lupa_password = False
                     st.rerun()
@@ -169,7 +173,7 @@ if not st.session_state.login:
                 # Tahap 2: Verifikasi OTP dan ganti password
                 input_otp = st.text_input("Masukkan Kode OTP")
                 new_pw = st.text_input("Password Baru", type="password")
-                
+
                 if st.button("Reset Password"):
                     if input_otp != st.session_state.otp_code:
                         st.error("Kode OTP salah.")
@@ -188,24 +192,25 @@ if not st.session_state.login:
                         st.session_state.reset_username = ""
                         time.sleep(3)
                         st.rerun()
-                            
+
                 if st.button("❌ Batalkan"):
                     st.session_state.lupa_password = False
                     st.session_state.otp_sent = False
                     st.session_state.otp_code = ""
                     st.session_state.reset_username = ""
                     st.rerun()
-        
+
     elif mode == "Daftar Akun":
         st.header("Daftar Akun Baru")
         full_name = st.text_input("Nama Lengkap")
         user = st.text_input("Username Baru (huruf kecil/angka tanpa spasi)")
         pw = st.text_input("Password Baru", type="password")
         kode = st.text_input("Kode Undangan")
+
         # Ambil data dari Firebase
         users_ref = db.reference("users")
         users = users_ref.get() or {}
-        
+
         invite_ref = db.reference("invite")
         invite = invite_ref.get() or {"aktif": ""}
 
@@ -224,7 +229,9 @@ if not st.session_state.login:
                     "nama": full_name
                 })
                 st.success("Akun berhasil dibuat. Silakan login.")
+
     st.stop()
+
 
 def proses_logout():
     st.session_state.login = False
