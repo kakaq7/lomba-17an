@@ -4,7 +4,7 @@ import os
 import firebase_admin
 import hashlib
 import smtplib
-import rqndom
+import random
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from firebase_admin import credentials, db
