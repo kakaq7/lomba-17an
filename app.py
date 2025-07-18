@@ -110,6 +110,7 @@ if not st.session_state.login:
     mode = st.selectbox("Pilih", ["Login", "Daftar Akun"])
     if mode == "Login":
         if not st.session_state.lupa_password:
+            st.session_state.lupa_password = False
             st.header("Login Anggota Karang Taruna")
             st.text_input("Username", key="login_user")
             st.text_input("Password", type="password", key="login_pass")
