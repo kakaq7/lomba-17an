@@ -185,7 +185,7 @@ if not st.session_state.login:
                 st.session_state.password_reset_success = False
                 st.rerun()
         
-    else mode == "Daftar Akun":
+    else:
         st.header("Daftar Akun Baru")
         full_name = st.text_input("Nama Lengkap")
         user = st.text_input("Username Baru (huruf kecil/angka tanpa spasi)")
