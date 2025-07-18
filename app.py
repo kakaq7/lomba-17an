@@ -3,10 +3,21 @@ import json
 import os
 import firebase_admin
 import hashlib
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from firebase_admin import credentials, db
 from datetime import datetime
 from pytz import timezone
 from fpdf import FPDF
+
+# Tambahkan field email jika belum ada
+for uname, udata in users.items():
+    if "email" not in udata:
+        users[uname]["email"] = ""  # atau None
+
+# Simpan kembali ke Firebase
+users_ref.set(users)
 
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
