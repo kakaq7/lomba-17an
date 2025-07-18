@@ -166,6 +166,7 @@ if not st.session_state.login:
                             "password": hash_password(new_pw)
                         })
                         st.success("Password berhasil direset. Silakan login kembali.")
+                        st.session_state.password_reset_success = True
                         st.session_state.lupa_password = False
                         st.session_state.pop("otp_sent", None)
                         st.session_state.pop("otp_code", None)
@@ -178,10 +179,11 @@ if not st.session_state.login:
                     st.session_state.otp_code = ""
                     st.session_state.reset_username = ""
                     st.rerun()
-
-            if st.button("Kembali ke Login"):
-                st.session_state.lupa_password = False
-                st.rerun()
+                if st.session_state.get("password_reset_success"):
+                    if st.button("Kembali ke Login"):
+                        st.session_state.lupa_password = False
+                        st.session_state.password_reset_success = False
+                        st.rerun()
         
     elif mode == "Daftar Akun":
         st.header("Daftar Akun Baru")
