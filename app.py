@@ -147,7 +147,7 @@ if not st.session_state.login:
                             st.session_state.otp_code = otp
                             st.session_state.reset_username = username
                             st.session_state.otp_sent = True
-                            st.success("Kode OTP telah dikirim ke {users[username]['email']}.")
+                            st.success(f"Kode OTP telah dikirim ke {users[username]['email']}.")
                             time.sleep(2)
                             st.rerun()
             else:
