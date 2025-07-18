@@ -105,12 +105,14 @@ def proses_login():
         st.session_state.login_error = "Username atau password salah."
 
 # Login/Register
-st.title("🇮🇩Aplikasi Karang jfTaruna Bina Bhakti")
+st.title("🇮🇩Aplikasi Karang bbTaruna Bina Bhakti")
 if not st.session_state.login:
     mode = st.selectbox("Pilih", ["Login", "Daftar Akun"])
     if mode == "Login":
+        st.session_state.setdefault("lupa_password", False)
+
         if not st.session_state.lupa_password:
-            st.session_state["lupa_password"] = False
+            st.session_state.login_attempted = False
             st.header("Login Anggota Karang Taruna")
             st.text_input("Username", key="login_user")
             st.text_input("Password", type="password", key="login_pass")
