@@ -147,6 +147,7 @@ if not st.session_state.login:
                             st.session_state.reset_username = username
                             st.session_state.otp_sent = True
                             st.success("Kode OTP telah dikirim ke email.")
+                            time.sleep(2)
                             st.rerun()
             else:
                 # Tahap 2: Verifikasi OTP dan ganti password
