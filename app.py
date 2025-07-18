@@ -216,7 +216,7 @@ if not user_data.get("email"):
     if st.button("Simpan Email"):
         # Cek apakah email kosong
         if not new_email:
-            st.error("❌ Email tidak boleh kosong.")
+            st.error("❌ Email tidak boleh kosong.")
         # Cek format email valid
         elif not re.match(r"[^@]+@[^@]+\.[^@]+", new_email):
             st.error("❌ Format email tidak valid.")
