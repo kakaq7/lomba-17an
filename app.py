@@ -161,13 +161,13 @@ def proses_logout():
 # Sidebar: Logout + Admin Panel
 st.sidebar.title(f"Hai, {users[st.session_state.username]['nama']}")
 user_data = users[st.session_state.username]
-    if not user_data.get("email"):
-        st.warning("💡 Masukkan email untuk keamanan akun Anda.")
-        new_email = st.text_input("Masukkan email:", key="email_input")
-        if st.button("Simpan Email"):
-            users[st.session_state.username]["email"] = new_email
-            users_ref.set(users)
-            st.success("✅ Email berhasil disimpan.")
+if not user_data.get("email"):
+    st.warning("💡 Masukkan email untuk keamanan akun Anda.")
+    new_email = st.text_input("Masukkan email:", key="email_input")
+    if st.button("Simpan Email"):
+        users[st.session_state.username]["email"] = new_email
+        users_ref.set(users)
+        st.success("✅ Email berhasil disimpan.")
 
 st.sidebar.button("Logout", on_click=proses_logout)
 
