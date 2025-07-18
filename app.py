@@ -193,7 +193,7 @@ if not st.session_state.login:
                     st.session_state.reset_username = ""
                     st.rerun()
         
-     elif mode == "Daftar Akun":
+    elif mode == "Daftar Akun":
         st.header("Daftar Akun Baru")
         full_name = st.text_input("Nama Lengkap")
         user = st.text_input("Username Baru (huruf kecil/angka tanpa spasi)")
