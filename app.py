@@ -14,6 +14,12 @@ from datetime import datetime
 from pytz import timezone
 from fpdf import FPDF
 
+st.title("🇮🇩 Aplikasi Karanggg Taruna Bina Bhakti")
+st.session_state.setdefault("login", False)
+st.session_state.setdefault("lupa_password", False)
+st.session_state.setdefault("password_reset_success", False)
+
+
 def generate_otp():
     return str(random.randint(100000, 999999))
 
@@ -105,13 +111,12 @@ def proses_login():
         st.session_state.login_error = "Username atau password salah."
 
 # Login/Register
-st.title("🇮🇩Aplikasi Karang bvcTaruna Bina Bhakti")
-st.session_state.setdefault("lupa_password", False)
-st.session_state.setdefault("password_reset_success", False)
-st.session_state.setdefault("otp_sent", False)
-st.session_state.setdefault("otp_code", "")
 if not st.session_state.login:
     mode = st.selectbox("Pilih", ["Login", "Daftar Akun"])
+    if mode != "Login":
+        st.session_state.lupa_password = False
+        st.session_state.password_reset_success = False
+
     if mode == "Login":
         if not st.session_state.lupa_password:
             st.header("Login Anggota Karang Taruna")
@@ -127,15 +132,10 @@ if not st.session_state.login:
             if st.button("Lupa Password?"):
                 st.session_state.lupa_password = True
                 st.rerun()
-        else:
+        elif:
             st.header("Reset Password")
 
-            if "otp_sent" not in st.session_state:
-                st.session_state.otp_sent = False
-            if "otp_code" not in st.session_state:
-                st.session_state.otp_code = ""
-
-            if not st.session_state.otp_sent:
+            if not st.session_state.get("otp_sent", False):
                 lupa_nama = st.text_input("Nama Lengkap")
                 username = st.text_input("Username")
 
@@ -178,17 +178,14 @@ if not st.session_state.login:
                         st.session_state.pop("reset_username", None)
                 if st.button("❌ Batalkan"):
                     st.session_state.otp_sent = False
-                    st.session_state.otp_code = ""
-                    st.session_state.reset_username = ""
                     st.rerun()
-                    
-    if st.session_state.get("password_reset_success"):
-        if st.button("Kembali ke Login"):
-            st.session_state.lupa_password = False
-            st.session_state.password_reset_success = False
-            st.rerun()
+        elif st.session_state.password_reset_success:
+            st.success("Password berhasil direset. Silakan login.")
+            if st.button("🔙 Kembali ke Login"):
+                st.session_state.password_reset_success = False
+                st.rerun()
         
-    elif mode == "Daftar Akun":
+    else mode == "Daftar Akun":
         st.header("Daftar Akun Baru")
         full_name = st.text_input("Nama Lengkap")
         user = st.text_input("Username Baru (huruf kecil/angka tanpa spasi)")
