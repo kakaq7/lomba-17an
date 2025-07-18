@@ -162,6 +162,9 @@ if not st.session_state.login:
                             st.success(f"Kode OTP telah dikirim ke {users[username]['email']}.")
                             time.sleep(2)
                             st.rerun()
+                if st.button("❌ Batalkan"):
+                    st.session_state.lupa_password = False
+                    st.rerun()
             else:
                 # Tahap 2: Verifikasi OTP dan ganti password
                 input_otp = st.text_input("Masukkan Kode OTP")
