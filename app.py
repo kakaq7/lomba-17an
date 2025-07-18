@@ -44,10 +44,10 @@ else:
 users_ref = db.reference("users")
 users = users_ref.get() or {}
 
-for uname, udata in users_data.items():
+for uname, udata in users.items():
     if "password" in udata and len(udata["password"]) < 60:
         hashed_pw = hash_password(udata["password"])
-        users_data[uname]["password"] = hashed_pw
+        users[uname]["password"] = hashed_pw
 
 # Simpan kembali ke Firebase
 users_ref.set(users)
