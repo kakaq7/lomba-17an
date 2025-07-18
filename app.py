@@ -105,12 +105,14 @@ def proses_login():
         st.session_state.login_error = "Username atau password salah."
 
 # Login/Register
-st.title("🇮🇩Aplikasi Karang bsbTaruna Bina Bhakti")
+st.title("🇮🇩Aplikasi Karang bvcTaruna Bina Bhakti")
+st.session_state.setdefault("lupa_password", False)
+st.session_state.setdefault("password_reset_success", False)
+st.session_state.setdefault("otp_sent", False)
+st.session_state.setdefault("otp_code", "")
 if not st.session_state.login:
     mode = st.selectbox("Pilih", ["Login", "Daftar Akun"])
     if mode == "Login":
-        st.session_state.setdefault("lupa_password", False)
-        st.session_state.setdefault("password_reset_success", False)
         if not st.session_state.lupa_password:
             st.header("Login Anggota Karang Taruna")
             st.text_input("Username", key="login_user")
@@ -127,8 +129,6 @@ if not st.session_state.login:
                 st.rerun()
         else:
             st.header("Reset Password")
-            st.session_state.setdefault("otp_sent", False)
-            st.session_state.setdefault("otp_code", "")
 
             if "otp_sent" not in st.session_state:
                 st.session_state.otp_sent = False
