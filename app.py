@@ -4,12 +4,34 @@ import os
 import firebase_admin
 import hashlib
 import smtplib
+import rqndom
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from firebase_admin import credentials, db
 from datetime import datetime
 from pytz import timezone
 from fpdf import FPDF
+
+def generate_otp():
+    return str(random.randint(100000, 999999))
+
+def send_otp_email(receiver_email, otp):
+    sender = st.secrets["email"]["sender"]
+    app_password = st.secrets["email"]["app_password"]
+
+    msg = MIMEText(f"Kode OTP untuk reset password Anda: {otp}")
+    msg["Subject"] = "Kode OTP Reset Password"
+    msg["From"] = sender
+    msg["To"] = receiver_email
+
+    try:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            server.login(sender, app_password)
+            server.sendmail(sender, receiver_email, msg.as_string())
+        return True
+    except Exception as e:
+        st.error(f"Gagal mengirim email: {e}")
+        return False
 
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
@@ -101,23 +123,46 @@ if not st.session_state.login:
                 st.rerun()
         else:
             st.header("Reset Password")
-            lupa_nama = st.text_input("Nama Lengkap")
-            username = st.text_input("Username")
-            new_pw = st.text_input("Password Baru", type="password")
+            if "otp_sent" not in st.session_state:
+                st.session_state.otp_sent = False
+            if "otp_code" not in st.session_state:
+                st.session_state.otp_code = ""
 
-            if st.button("Reset Password"):
-                if not lupa_nama or not username or not new_pw:
-                    st.error("Semua kolom harus diisi.")
-                elif username not in users:
-                    st.error("Username tidak ditemukan.")
-                elif users[username]["nama"].strip().lower() != lupa_nama.strip().lower():
-                    st.error("Nama lengkap tidak cocok dengan data.")
-                else:
-                    db.reference("users").child(username).update({
-                        "password": hash_password(new_pw)
-                    })
-                    st.success("Password berhasil direset. Silakan login kembali.")
-                    st.session_state.lupa_password = False
+            if not st.session_state.otp_sent:
+                lupa_nama = st.text_input("Nama Lengkap")
+                username = st.text_input("Username")
+
+                if st.button("Kirim OTP ke Email"):
+                    if not lupa_nama or not username or not new_pw:
+                        st.error("Semua kolom harus diisi.")
+                    elif username not in users:
+                        st.error("Username tidak ditemukan.")
+                    elif users[username]["nama"].strip().lower() != lupa_nama.strip().lower():
+                        st.error("Nama lengkap tidak cocok dengan data.")
+                    else:
+                        otp = generate_otp()
+                        if send_otp_email(users[username]["email"], otp):
+                            st.session_state.otp_code = otp
+                            st.session_state.reset_username = username
+                            st.session_state.otp_sent = True
+                            st.success("Kode OTP telah dikirim ke email.")
+            else:
+                # Tahap 2: Verifikasi OTP dan ganti password
+                input_otp = st.text_input("Masukkan Kode OTP")
+                new_pw = st.text_input("Password Baru", type="password")
+                
+                if st.button("Reset Password"):
+                    if input_otp != st.session_state.otp_code:
+                        st.error("Kode OTP salah.")
+                    elif not new_pw:
+                        st.error("Password tidak boleh kosong.")
+                    else:
+                        username = st.session_state.reset_username
+                        db.reference("users").child(username).update({
+                            "password": hash_password(new_pw)
+                        })
+                        st.success("Password berhasil direset. Silakan login kembali.")
+                        st.session_state.lupa_password = False
 
             if st.button("Kembali ke Login"):
                 st.session_state.lupa_password = False
