@@ -136,7 +136,7 @@ if not st.session_state.login:
                 if st.button("Lupa Password?"):
                     st.session_state.lupa_password = True
                     st.rerun()
-            else
+            else:
                 st.header("Reset Password")
                 if not st.session_state.get("otp_sent", False):
                     lupa_nama = st.text_input("Nama Lengkap")
