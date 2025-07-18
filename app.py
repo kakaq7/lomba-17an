@@ -132,7 +132,7 @@ if not st.session_state.login:
             if st.button("Lupa Password?"):
                 st.session_state.lupa_password = True
                 st.rerun()
-        elif:
+        elif st.session_state.lupa_password:
             st.header("Reset Password")
 
             if not st.session_state.get("otp_sent", False):
