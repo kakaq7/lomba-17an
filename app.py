@@ -5,6 +5,7 @@ import firebase_admin
 import hashlib
 import smtplib
 import random
+import re
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from firebase_admin import credentials, db
@@ -213,9 +214,22 @@ if not user_data.get("email"):
     st.warning("💡 Masukkan email untuk keamanan akun Anda.")
     new_email = st.text_input("Masukkan email:", key="email_input")
     if st.button("Simpan Email"):
-        users[st.session_state.username]["email"] = new_email
-        users_ref.set(users)
-        st.success("✅ Email berhasil disimpan.")
+        # Cek apakah email kosong
+        if not new_email:
+            st.error("❌ Email tidak boleh kosong.")
+        # Cek format email valid
+        elif not re.match(r"[^@]+@[^@]+\.[^@]+", new_email):
+            st.error("❌ Format email tidak valid.")
+        # Cek apakah email sudah digunakan oleh user lain
+        elif any(
+            u != st.session_state.username and udata.get("email", "").lower() == new_email.lower()
+            for u, udata in users.items()
+        ):
+            st.error("❌ Email sudah digunakan oleh pengguna lain.")
+        else:
+            users[st.session_state.username]["email"] = new_email
+            users_ref.set(users)
+            st.success("✅ Email berhasil disimpan.")
 
 st.sidebar.button("Logout", on_click=proses_logout)
 
