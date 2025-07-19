@@ -282,7 +282,12 @@ def proses_logout():
     st.session_state.login_error = False
 
 # Sidebar: Logout + Admin Panel
-st.sidebar.title(f"Hai, {users[st.session_state.username]['nama']}")
+username = st.session_state.get("username")
+if username and username in users:
+    st.sidebar.title(f"Hai, {users[username]['nama']}")
+else:
+    st.sidebar.title("Selamat Datang")
+    
 user_data = users[st.session_state.username]
 if not user_data.get("email"):
     st.warning("💡 Masukkan email untuk keamanan akun Anda.")
