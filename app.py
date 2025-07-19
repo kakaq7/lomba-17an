@@ -47,6 +47,24 @@ def send_otp_email(receiver_email, otp):
         st.error(f"Gagal mengirim email: {e}")
         return False
 
+def send_newotp_email(receiver_email, otp):
+    sender = st.secrets["email"]["sender"]
+    app_password = st.secrets["email"]["app_password"]
+
+    msg = MIMEText(f"Kode OTP untuk Pendaftaran Akun Anda: {otp}")
+    msg["Subject"] = "Kode OTP Pendaftaran Akun"
+    msg["From"] = sender
+    msg["To"] = receiver_email
+
+    try:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            server.login(sender, app_password)
+            server.sendmail(sender, receiver_email, msg.as_string())
+        return True
+    except Exception as e:
+        st.error(f"Gagal mengirim email: {e}")
+        return False
+
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
@@ -208,34 +226,54 @@ if not st.session_state.get("login"):
     elif mode == "Daftar Akun":
         st.header("Daftar Akun Baru")
         full_name = st.text_input("Nama Lengkap")
+        new_email = st.text_input("Email:", key="email_input")
         user = st.text_input("Username Baru (huruf kecil/angka tanpa spasi)")
         pw = st.text_input("Password Baru", type="password")
         kode = st.text_input("Kode Undangan")
 
-        # Ambil data dari Firebase
-        users_ref = db.reference("users")
-        users = users_ref.get() or {}
-
-        invite_ref = db.reference("invite")
-        invite = invite_ref.get() or {"aktif": ""}
-
-        if st.button("Daftar"):
-            if not user or not pw or not kode:
-                st.error("Semua kolom harus diisi.")
-            elif not user.isalnum() or not user.islower() or " " in user:
-                st.error("Username hanya boleh huruf kecil dan angka tanpa spasi.")
-            elif user in users:
-                st.error("Username sudah ada.")
-            elif kode != invite["aktif"]:
-                st.error("Kode undangan tidak valid.")
-            else:
-                users_ref.child(user).set({
-                    "password": hash_password(pw),
-                    "nama": full_name
-                })
-                st.success("Akun berhasil dibuat. Silakan login.")
-
-    st.stop()
+        if not st.session_state.get("otp_sent_daftar"):
+            if st.button("Kirim OTP ke Email"):
+                users_ref = db.reference("users")
+                users = users_ref.get() or {}
+                invite_ref = db.reference("invite")
+                invite = invite_ref.get() or {"aktif": ""}
+                if not user or not pw or not kode or not new_email:
+                    st.error("Semua kolom harus diisi.")
+                elif any(u.get("email", "").lower() == new_email.strip().lower() for u in users.items())
+                    st.error("❌ Email sudah digunakan oleh pengguna lain.")
+                elif not user.isalnum() or not user.islower() or " " in user:
+                    st.error("Username hanya boleh huruf kecil dan angka tanpa spasi.")
+                elif user in users:
+                    st.error("Username sudah ada.")
+                elif kode != invite["aktif"]:
+                    st.error("Kode undangan tidak valid.")
+                else:
+                    otp = generate_otp()
+                        if send_newotp_email(email, otp):
+                            st.session_state.otp_sent_daftar = True
+                            st.session_state.otp_code_daftar = otp
+                            st.success("Kode OTP telah dikirim ke email anda.")
+                        else
+                            st.error("Gagal mengirim OTP.")
+        if st.session_state.get("otp_sent_daftar"):
+            input_otp = st.text_input("Masukkan Kode OTP")
+            if st.button("Verifikasi & Daftar"):
+                if input_otp != st.session_state.get("otp_code_daftar", ""):
+                    st.error("Kode OTP salah.")
+                elif not user or not pw or not kode or not new_email or not full_name:
+                    st.error("Semua kolom harus diisi.")
+                else:
+                    db.reference("users").child(user).set({
+                        "nama": full_name,
+                        "password": hash_password(pw),
+                        "email": new_email
+                    })
+                    st.success("Akun berhasil dibuat. Silakan login.")
+                    # Reset session
+                    st.session_state.otp_sent_daftar = False
+                    st.session_state.otp_code_daftar = ""
+                    time.sleep(2)
+                    st.rerun()
 
 
 def proses_logout():
