@@ -138,7 +138,7 @@ def proses_login():
 if not st.session_state.get("login"):
     # Tampilkan selectbox hanya jika tidak dalam mode lupa password atau reset OTP
     if not st.session_state.get("lupa_password", False) and not st.session_state.get("otp_sent", False):
-        mode = st.selectbox("Pilih", ["Login", "Daftar Akun"])
+        mode = st.selectbox("Pilih", ["Login", "Daftar Akun"], key="Pilih")
         st.session_state.mode = mode  # simpan mode agar tidak hilang saat rerun
     else:
         mode = st.session_state.get("mode", "Login")  # ambil dari session_state
@@ -272,6 +272,7 @@ if not st.session_state.get("login"):
                     # Reset session
                     st.session_state.otp_sent_daftar = False
                     st.session_state.otp_code_daftar = ""
+                    st.session_state["Pilih"] = "Login"
                     time.sleep(2)
                     st.rerun()
 
