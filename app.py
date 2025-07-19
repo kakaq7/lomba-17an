@@ -316,7 +316,7 @@ if is_logged_in and username:
 st.sidebar.button("Logout", on_click=proses_logout)
 
 # Admin: Update Kode Undangan
-if st.session_state.username == "admin":
+if username == "admin":
     st.sidebar.title("Admin Panel")
     kode_baru = st.sidebar.text_input("Kode Undangan Baru")
     if st.sidebar.button("Perbarui Kode"):
