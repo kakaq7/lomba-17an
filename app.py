@@ -306,8 +306,9 @@ if not user_data.get("email"):
         ):
             st.error("❌ Email sudah digunakan oleh pengguna lain.")
         else:
-            users[st.session_state.username]["email"] = new_email
-            users_ref.set(users)
+            db.reference("users").child(st.session_state.username).update({
+                "email": new_email
+            })
             st.success("✅ Email berhasil disimpan.")
 
 st.sidebar.button("Logout", on_click=proses_logout)
