@@ -310,7 +310,7 @@ if is_logged_in and username:
             ):
                 st.error("❌ Email sudah digunakan oleh pengguna lain.")
             else:
-                db.reference("users").child(st.session_state.username).update({"email": new_email})
+                users_ref.child(username).update({"email": new_email})
                 st.success("✅ Email berhasil disimpan.")
 
 st.sidebar.button("Logout", on_click=proses_logout)
