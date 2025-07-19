@@ -23,7 +23,7 @@ st.session_state.setdefault("reset_username", "")
 st.session_state.setdefault("login_attempted", False)
 st.session_state.setdefault("login_error", "")
 
-st.title("🇮🇩 Aplikasi Karang Taruna Bina Bhakti")
+st.title("🇮🇩 Aplikasi Karang ggTaruna Bina Bhakti")
 
 
 def generate_otp():
