@@ -283,9 +283,16 @@ def proses_logout():
 
 # Sidebar: Logout + Admin Panel
 username = st.session_state.get("username")
+is_logged_in = st.session_state.get("login", False)
 
-if st.session_state.get("login") and username:
+if is_logged_in and username:
+    users_ref = db.reference("users")
+    users = users_ref.get() or {}
     user_data = users.get(username, {})
+    
+    nama_pengguna = user_data.get("nama", username)  # fallback ke username jika nama kosong
+    st.sidebar.title(f"Hai, {nama_pengguna}!")
+    
     if not user_data.get("email"):
         st.warning("💡 Masukkan email untuk keamanan akun Anda.")
         new_email = st.text_input("Masukkan email:", key="email_input")
