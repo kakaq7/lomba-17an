@@ -253,7 +253,7 @@ if not st.session_state.get("login"):
                         st.session_state.otp_sent_daftar = True
                         st.session_state.otp_code_daftar = otp
                         st.success("Kode OTP telah dikirim ke email anda.")
-                    else
+                    else:
                         st.error("Gagal mengirim OTP.")
         if st.session_state.get("otp_sent_daftar"):
             input_otp = st.text_input("Masukkan Kode OTP")
