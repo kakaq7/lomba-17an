@@ -339,7 +339,7 @@ elif menu == "Manajemen Anggota":
     absen_ref = db.reference("absensi")
     absen = absen_ref.get() or {}
 
-    if st.session_state.username == "admin":
+    if username == "admin":
         mode = st.selectbox("Pilih", ["Buat Acara", "Daftar Acara", "Kehadiran"])
 
         if mode == "Buat Acara":
