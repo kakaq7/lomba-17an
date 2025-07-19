@@ -282,35 +282,31 @@ def proses_logout():
     st.session_state.login_error = False
 
 # Sidebar: Logout + Admin Panel
-if st.session_state.get("login"):
-    username = st.session_state.get("username")
-    if username and username in users:
-        st.sidebar.title(f"Hai, {users[username]['nama']}")
-    else:
-        st.sidebar.title("Selamat Datang")
-    
-user_data = users[username]
-if not user_data.get("email"):
-    st.warning("💡 Masukkan email untuk keamanan akun Anda.")
-    new_email = st.text_input("Masukkan email:", key="email_input")
-    if st.button("Simpan Email"):
+username = st.session_state.get("username")
+
+if st.session_state.get("login") and username:
+    user_data = users.get(username, {})
+    if not user_data.get("email"):
+        st.warning("💡 Masukkan email untuk keamanan akun Anda.")
+        new_email = st.text_input("Masukkan email:", key="email_input")
+        if st.button("Simpan Email"):
         # Cek apakah email kosong
-        if not new_email:
-            st.error("❌ Email tidak boleh kosong.")
+            if not new_email:
+                st.error("❌ Email tidak boleh kosong.")
         # Cek format email valid
-        elif not re.match(r"[^@]+@[^@]+\.[^@]+", new_email):
-            st.error("❌ Format email tidak valid.")
+            elif not re.match(r"[^@]+@[^@]+\.[^@]+", new_email):
+                st.error("❌ Format email tidak valid.")
         # Cek apakah email sudah digunakan oleh user lain
-        elif any(
-            u != st.session_state.username and udata.get("email", "").lower() == new_email.lower()
-            for u, udata in users.items()
-        ):
-            st.error("❌ Email sudah digunakan oleh pengguna lain.")
-        else:
-            db.reference("users").child(st.session_state.username).update({
+            elif any(
+                u != st.session_state.username and udata.get("email", "").lower() == new_email.lower()
+                for u, udata in users.items()
+            ):
+                st.error("❌ Email sudah digunakan oleh pengguna lain.")
+            else:
+                db.reference("users").child(st.session_state.username).update({
                 "email": new_email
-            })
-            st.success("✅ Email berhasil disimpan.")
+                })
+                st.success("✅ Email berhasil disimpan.")
 
 st.sidebar.button("Logout", on_click=proses_logout)
 
