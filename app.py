@@ -23,7 +23,7 @@ st.session_state.setdefault("reset_username", "")
 st.session_state.setdefault("login_attempted", False)
 st.session_state.setdefault("login_error", "")
 
-st.title("🇮🇩 Aplikasi Karang ggTaruna Bina Bhakti")
+st.title("🇮🇩 Aplikasi Karang Taruna Bina Bhakti")
 
 
 def generate_otp():
@@ -52,7 +52,7 @@ def send_newotp_email(receiver_email, otp):
     app_password = st.secrets["email"]["app_password"]
 
     msg = MIMEText(f"Kode OTP untuk Pendaftaran Akun Anda: {otp}")
-    msg["Subject"] = "Kode OTP Pendaftaran Akun"
+    msg["Subject"] = "Kode OTP Pendaftaran Akun Karang Taruna Bina Bhakti"
     msg["From"] = sender
     msg["To"] = receiver_email
 
@@ -257,7 +257,7 @@ if not st.session_state.get("login"):
                         st.error("Gagal mengirim OTP.")
         if st.session_state.get("otp_sent_daftar"):
             input_otp = st.text_input("Masukkan Kode OTP")
-            if st.button("Verifikasi & Daftar"):
+            if st.button("Daftar"):
                 if input_otp != st.session_state.get("otp_code_daftar", ""):
                     st.error("Kode OTP salah.")
                 elif not user or not pw or not kode or not new_email or not full_name:
