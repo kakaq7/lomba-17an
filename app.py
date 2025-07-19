@@ -239,10 +239,7 @@ if not st.session_state.get("login"):
                 invite = invite_ref.get() or {"aktif": ""}
                 if not user or not pw or not kode or not new_email:
                     st.error("Semua kolom harus diisi.")
-                elif any(
-                    u != username and udata.get("email", "").lower() == new_email.lower()
-                    for u, udata in users.items()
-                ):
+                elif new_email in users:
                     st.error("❌ Email sudah digunakan oleh pengguna lain.")
                 elif not user.isalnum() or not user.islower() or " " in user:
                     st.error("Username hanya boleh huruf kecil dan angka tanpa spasi.")
