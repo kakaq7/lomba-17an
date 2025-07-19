@@ -249,7 +249,7 @@ if not st.session_state.get("login"):
                     st.error("Kode undangan tidak valid.")
                 else:
                     otp = generate_otp()
-                    if send_newotp_email(email, otp):
+                    if send_newotp_email(new_email, otp):
                         st.session_state.otp_sent_daftar = True
                         st.session_state.otp_code_daftar = otp
                         st.success("Kode OTP telah dikirim ke email anda.")
