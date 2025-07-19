@@ -273,6 +273,7 @@ if not st.session_state.get("login"):
                     st.session_state.otp_sent_daftar = False
                     st.session_state.otp_code_daftar = ""
                     st.session_state["Pilih"] = "Login"
+                    st.session_state.mode = "Login"
                     time.sleep(2)
                     st.rerun()
 
