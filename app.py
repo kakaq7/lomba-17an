@@ -160,7 +160,7 @@ if not st.session_state.get("login"):
             st.button("Login", on_click=proses_login)
 
             if st.session_state.login_attempted and st.session_state.login_error:
-                st.error(st.session_state.login_error)
+                st.toast(st.session_state.login_error)
 
             if st.button("Lupa Password?"):
                 st.session_state.lupa_password = True
