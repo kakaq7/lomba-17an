@@ -174,7 +174,7 @@ if not st.session_state.get("login"):
 
                 if st.button("Kirim OTP ke Email"):
                     if not lupa_nama or not username:
-                        st.error("Semua kolom harus diisi.")
+                        st.toast("Semua kolom harus diisi.")
                     elif username not in users:
                         st.error("Username tidak ditemukan.")
                     elif users[username]["nama"].strip().lower() != lupa_nama.strip().lower():
