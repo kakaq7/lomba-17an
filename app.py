@@ -238,15 +238,15 @@ if not st.session_state.get("login"):
                 invite_ref = db.reference("invite")
                 invite = invite_ref.get() or {"aktif": ""}
                 if not user or not pw or not kode or not new_email:
-                    st.error("Semua kolom harus diisi.")
+                    st.toast("Semua kolom harus diisi.")
                 elif any(u.get("email", "").lower() == new_email.lower() for u in users.values()):
-                    st.error("❌ Email sudah digunakan oleh pengguna lain.")
+                    st.toast("❌ Email sudah digunakan oleh pengguna lain.")
                 elif not user.isalnum() or not user.islower() or " " in user:
-                    st.error("Username hanya boleh huruf kecil dan angka tanpa spasi.")
+                    st.toast("Username hanya boleh huruf kecil dan angka tanpa spasi.")
                 elif user in users:
-                    st.error("Username sudah ada.")
+                    st.toast("Username sudah ada.")
                 elif kode != invite["aktif"]:
-                    st.error("Kode undangan tidak valid.")
+                    st.toast("Kode undangan tidak valid.")
                 else:
                     otp = generate_otp()
                     if send_newotp_email(new_email, otp):
