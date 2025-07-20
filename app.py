@@ -325,11 +325,7 @@ if is_logged_in and username:
         menu = st.sidebar.selectbox("Menu", ["Manajemen Anggota", "Manajemen Lomba"])
 
         # Mulai isi halaman
-        if menu == "Manajemen Lomba":
-            st.header("Lomba")
-            # Tambahkan logika lomba di sini jika ada
-
-        elif menu == "Manajemen Anggota":
+        if menu == "Manajemen Anggota":
             acara_ref = db.reference("acara")
             acara = acara_ref.get() or []
 
@@ -477,3 +473,6 @@ if is_logged_in and username:
                                 absen[pilihan].append(username)
                                 db.reference("absensi").set(absen)
                                 st.success("Berhasil absen.")
+        elif menu == "Manajemen Lomba":
+            st.header("Lomba")
+            # Tambahkan logika lomba di sini jika a
