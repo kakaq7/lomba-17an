@@ -109,14 +109,6 @@ for uname, udata in users.items():
 # Simpan kembali ke Firebase
 users_ref.set(users)
 
-# Tambahkan admin jika belum ada
-if "admin" not in users:
-    users["admin"] = {
-        "password": hash_password("merdeka45"),
-        "nama": "Administrator"
-    }
-    users_ref.set(users)
-
 def proses_login():
     user = st.session_state.get("login_user","").strip()
     pw = st.session_state.get("login_pass","").strip()
